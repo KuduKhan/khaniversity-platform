@@ -88,6 +88,7 @@ export function AuthForm({ connected }: { connected: boolean }) {
               : "Create your student account →"}
         </button>
         <p role="status">{message}</p>
+        {mode === "signin" && <p className="fine"><a className="text-link" href="/recover">Forgot your password?</a></p>}
       </form>
     </>
   );

@@ -17,6 +17,22 @@ The shared academic model is university → school → program → course → mo
 
 The final-phase social layer is represented by account-backed cohorts, discussion posts, project sharing and structured peer reviews. Academic staff have scoped cohort and capstone workflows, an audit trail and gated credential issuance. The PWA shell caches only public routes and static assets; account, API, admin and learning-record paths are excluded.
 
+## Release 0.2 improvement pass (October 2026)
+
+- StudentOS now derives a next-best-lesson recommendation, a revision queue, and
+  a visible mastery count from the current learning record rather than inventing
+  streaks or treating quiz mastery as a degree.
+- Connected diagnostic practice is session-only; preview diagnostic evidence
+  stays in browser-local records. Neither becomes an official course grade.
+- CodeLab provides an explicit Python draft export; connected practice does
+  not write unverified checks into a student's academic database record.
+- The AI Professor now appears across CS101, with module-specific lesson
+  grounding composed on the server. Authored guides work without an AI key.
+- Account recovery and PKCE auth email callback are added for student
+  resilience, subject to provider/email validation.
+- The release remains a modular monolith and requires dedicated live-account,
+  privacy, security, accessibility and production checks before public rollout.
+
 ## External setup boundaries
 
 The full application runs locally without cloud credentials in preview mode. Account-backed learning requires applying both ordered Supabase migrations and setting the public project URL and publishable key. Live AI requires a valid server-only provider key. Labs currently simulate infrastructure rather than provision cloud resources. Email delivery, public hosting and an institutional accreditation process are external operations and are not represented as completed.

@@ -301,6 +301,23 @@ test("tutor endpoint rejects cross-origin requests even without an AI key", asyn
   expect(result.status()).toBe(403);
 });
 
+test("account recovery rejects cross-origin use and recovery pages remain accessible", async ({ page, request }) => {
+  await page.goto("/recover");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Recover");
+  await page.goto("/reset-password");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Choose a new password");
+  const response = await request.post("/api/account/recovery", {
+    headers: { origin: "https://malicious.example" },
+    data: { email: "example@example.com" },
+  });
+  expect(response.status()).toBe(403);
+  const update = await request.post("/api/account/password", {
+    headers: { origin: "https://malicious.example" },
+    data: { password: "ExampleLongPassword321!" },
+  });
+  expect(update.status()).toBe(403);
+});
+
 test("auth endpoint rejects cross-origin requests", async ({ request }) => {
   const response = await request.post("/api/auth", {
     headers: { origin: "https://example.invalid" },

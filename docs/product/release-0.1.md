@@ -8,6 +8,8 @@ Not part of 0.1: complete CS101, AI Professor, CodeLab, staff console, grades ov
 
 Before a real learner pilot: connect a designated Supabase environment; apply migrations; run live two-account isolation and signup/email/session/recovery tests; complete instructional and accessibility review; define privacy notice, consent, retention, export/deletion and incident handling; configure backups and abuse controls. No production readiness or external integration validation is implied by local checks.
 
+Identity follow-on: the Foundation 0.2 stabilization branch adds the server-side PKCE confirmation callback and password recovery/update pages. These require valid Supabase Auth redirect allowlisting, SMTP and a live end-to-end email test; they are not validated by browser-preview CI alone.
+
 Next milestone: identity hardening and lesson publication infrastructure, followed by the Python execution and assessment slices. Keep each release independently usable.
 
 Dependency audit (18 October 2026): npm reports five high-severity entries along the development-only eslint-config-next → fast-glob → micromatch → braces chain. These represent one upstream issue, [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), for which the advisory lists no patched braces release. The tooling reads repository-controlled file patterns; application requests do not reach this dependency. Keep tracking the upstream fix; do not apply npm's suggested major downgrade of the Next.js lint configuration or remove checks to hide the advisory.

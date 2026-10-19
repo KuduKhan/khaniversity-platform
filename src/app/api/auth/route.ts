@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   const db = await database();
   const { data, error } =
     mode === "signup"
-      ? await db.auth.signUp({ email, password })
+      ? await db.auth.signUp({ email, password, options: { emailRedirectTo: `${new URL(request.url).origin}/auth/callback?next=/dashboard` } })
       : await db.auth.signInWithPassword({ email, password });
   if (error)
     return NextResponse.json(

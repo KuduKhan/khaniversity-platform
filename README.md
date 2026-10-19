@@ -39,6 +39,10 @@ Supported roles are `instructor`, `reviewer`, and `administrator`. Instructors m
 
 The preview tools remain available at `/preview/path`, `/preview/codelab`, `/preview/labs`, and `/preview/passport`. Their evidence stays in local storage even when an authenticated user opens the account route aliases; account-backed CS101 checks, drafts, peer work and issued credentials have separate database records.
 
+## Account recovery and session verification
+
+Students can request password recovery at `/recover`. PKCE email links return through `/auth/callback`, which exchanges the code server-side; `/reset-password` updates the password and signs the student out. Add your deployed HTTPS origin and `https://YOUR-DOMAIN/auth/callback` to Supabase Auth Redirect URLs and configure reliable SMTP. Recovery emails use neutral responses to avoid confirming account existence. Verify delivery, expiry, password update and a new sign-in with a designated test account before launch.
+
 ## Quality checks
 
 ```powershell
