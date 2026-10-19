@@ -5,7 +5,7 @@ import { redactAssessmentAnswers } from "../../src/modules/academics/transport";
 
 test("account-facing CS101 lesson props omit formative answer keys", () => {
   const lessonModule = getCourseModule("programming-fundamentals");
-  assert.ok(module);
+  assert.ok(lessonModule);
   assert.equal(lessonModule.checks.length, 5);
   assert.equal(typeof lessonModule.checks[0].answer, "number");
 
