@@ -35,6 +35,14 @@ test("capstone snapshots are immutable, private, reviewer-graded and audited",as
     await assert.rejects(()=>db.query("select public.submit_cs101_capstone()"),/Enroll in CS101/);
     await db.exec(`insert into public.enrollments(user_id,course_id) values('${alice}','cs101')`);
     await assert.rejects(()=>db.query("select public.submit_cs101_capstone()"),/Save your project draft/);
+    const savedPath=await db.query<{submit_learning_diagnostic:{score:number;byTopic:Record<string,number>}}>(
+      "select public.submit_learning_diagnostic('[0,1,1,0,1,0]'::jsonb)");
+    assert.equal(savedPath.rows[0].submit_learning_diagnostic.score,100);
+    assert.equal(savedPath.rows[0].submit_learning_diagnostic.byTopic["Python foundations"],100);
+    await assert.rejects(()=>db.exec(`insert into public.learning_diagnostics(user_id,course_id,score,topic_scores)
+      values('${alice}','cs101',100,'{}')`),/permission denied/);
+    await assert.rejects(()=>db.query("select public.submit_learning_diagnostic('[0,1]'::jsonb)"),/Six diagnostic answers/);
+
     await db.exec(`insert into public.project_drafts
       (user_id,course_id,title,source_code,reflection) values
       ('${alice}','cs101','My Personal Study Planner',
@@ -57,6 +65,9 @@ test("capstone snapshots are immutable, private, reviewer-graded and audited",as
 
     await actor(bob);
     assert.equal((await db.query("select id from public.capstone_submissions")).rows.length,0);
+    assert.equal((await db.query("select score from public.learning_diagnostics")).rows.length,0);
+    await assert.rejects(()=>db.query("select public.submit_learning_diagnostic('[0,1,1,0,1,0]'::jsonb)"),/Enroll in CS101/);
+
     await assert.rejects(()=>db.query(`select public.review_cs101_capstone('${id}','{}',true,'Try to tamper with another student')`),/Assigned academic staff only/);
     await actor(tutor);
     await assert.rejects(()=>db.query(`select public.review_cs101_capstone('${id}','{}',true,'Valid feedback but no scoring')`),/Six rubric criteria/);
