@@ -1,12 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PublicHeader, Footer } from "@/components/brand";
-import { dataDomains } from "@/modules/platforms/data-domains";
 import { platformSurfaces } from "@/modules/platforms/catalog";
 import styles from "./platforms.module.css";
 
 export const metadata: Metadata = {
-  title: "Five Connected Platforms | KHANIVERSITY",
+  title: "Start Learning, Submit Code, and Manage Courses | KHANIVERSITY",
   description: "Explore the public academy, StudentOS, Learning Studio, Python CodeLab, and staff-governed Academic Administration.",
 };
 
@@ -16,8 +15,8 @@ export default function PlatformsPage() {
     <main id="main" className={styles.wrap}>
       <div className={styles.hero}>
         <span className={styles.eyebrow}>KHANIVERSITY · THE CONNECTED CAMPUS</span>
-        <h1>Five platforms.<br />One learning journey.</h1>
-        <p>Discover, enroll, learn, build and demonstrate progress through a connected academic experience. Each platform has a distinct purpose, while identity, curricula and authoritative results remain shared.</p>
+        <h1>Your academy.<br />Ready for real work.</h1>
+        <p>Explore the catalog, enroll in CS101, work through graded module checks, write and submit Python code, and review learning evidence. Qualified academic staff can govern teaching material, review submissions and manage course access.</p>
         <div className={styles.meta}>
           <span>ONE MODULAR MONOLITH</span>
           <span>COMPUTER SCIENCE FIRST</span>
@@ -25,7 +24,7 @@ export default function PlatformsPage() {
         </div>
       </div>
       <div className={styles.sectionHead}>
-        <div><h2>Explore your campus</h2><p>Choose an entry point. Public previews require no account; verified university records and academic operations require the appropriate identity and permissions.</p></div>
+        <div><h2>Open a working workspace</h2><p>Each link opens a learning or academic tool. Account-backed records require sign-in and enrollment; a local preview is available without them.</p></div>
       </div>
       <div className={styles.cards}>
         {platformSurfaces.map((surface) => <article className={styles.card} key={surface.id}>
@@ -44,14 +43,17 @@ export default function PlatformsPage() {
           <p className={styles.note}>{surface.note}</p>
         </article>)}
       </div>
-      <section className={styles.architecture} aria-labelledby="domain-title">
-        <span className={styles.eyebrow}>MASTER BLUEPRINT V1.0 · SECTION 07</span>
-        <h2 id="domain-title">One shared academic data foundation</h2>
-        <p>The nine blueprint data domains support all five platforms. The foundation already contains key account, catalog, progress, assessment, review, and audit tables; additional domain-specific tables remain planned and have not been deployed.</p>
-        <ul className={styles.domains}>{dataDomains.map(domain => <li key={domain.domain}>
-          <span>{domain.domain}</span><small>{domain.planned.length ? "Extended schema planned" : "Foundation present"}</small>
-        </li>)}</ul>
-        <p>Learning achievements are formative unless authorized assessments and human review satisfy the published course requirements. KHANIVERSITY does not offer accredited degrees.</p>
+      <section className={styles.architecture} aria-labelledby="workflow-title">
+        <span className={styles.eyebrow}>GET TO WORK · REAL LEARNING EXPERIENCES</span>
+        <h2 id="workflow-title">Move from a lesson to demonstrable skill</h2>
+        <p>These are CS101 entry points, not planned platform diagrams. A verified student account stores assessment results; staff-review decisions remain separate from browser practice checks.</p>
+        <div className={styles.links}>
+          <Link className={styles.primary} href="/dashboard">Open enrolled StudentOS →</Link>
+          <Link className={styles.primary} href="/codelab">Submit Python solution →</Link>
+          <Link className={styles.primary} href="/passport">View account-backed evidence →</Link>
+          <Link className={styles.secondary} href="/admin">Academic staff console →</Link>
+        </div>
+        <p className={styles.note}>Learning achievements are internal to KHANIVERSITY; this independent academy does not issue accredited university degrees. Staff actions require administrator-assigned course roles.</p>
       </section>
     </main>
     <Footer />

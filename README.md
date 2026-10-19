@@ -60,6 +60,12 @@ and at 200%/400% text zoom as part of final accessibility QA. Protected staff
 and real learner account records remain part of the separate connected-account
 test gate, not an unauthenticated visual regression claim.
 
+## Operational blueprint implementation (October 2026)
+
+The blueprint now includes **real student code submissions** (account-scoped `code_submissions`) and **independent faculty content approvals** (`lesson_revisions`). The existing `/admin` route exposes proposals, CodeLab verification, enrollment counts and auditable role assignment for an existing, confirmed account. The signed-in `/codelab` route submits Python source as *pending human review* and shows feedback/history; it never awards a score based on untrusted browser-reported tests. Reviewers publish supplementary explanatory material only after a separate staff member approves it, without mutating existing hidden assessment answer keys or previous grades.
+
+Apply the additive migration `supabase/migrations/20261019191000_operational_blueprint.sql` **before deploying this branch**. It requires the prior two migrations. Bootstrap the *first* verified administrator by a trusted operator after account creation; public signup cannot grant academic roles. Authenticated staff pages and real end-to-end account acceptance still require the connected release-validation credentials.
+
 ## Premium campus interface
 
 The public site and StudentOS use one scoped premium design layer (`src/app/premium.css`) with responsive, keyboard-accessible navigation. On smaller screens, activate the **Menu** control to browse the five campus destinations; the existing student workspace has its own collapsible sidebar. StudentOS now offers direct Learning Studio, Python CodeLab, and Skills Passport shortcuts, while keeping local preview and official student records distinct.

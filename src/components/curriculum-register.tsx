@@ -8,7 +8,7 @@ export function CurriculumRegister({
   return <section aria-labelledby="curriculum-register" className={styles.section}>
     <span className="eyebrow">ACADEMIC PLATFORM · CURRICULUM GOVERNANCE</span>
     <h2 id="curriculum-register">CS101 publication register</h2>
-    <p className={styles.intro}>A live, read-only view of authored lesson versions. Lesson publication changes are intentionally not exposed as an unrestricted button: they require approved content and assessment-version controls.</p>
+    <p className={styles.intro}>A database-backed register of the versioned core CS101 lesson records. Instructors can now propose additional teaching material in the faculty workspace above; reviewers independently approve it before enrolled students can read it.</p>
     <div className={styles.stats}>
       <div><strong>{summary.entries.length}</strong><span>Registered modules</span></div>
       <div><strong>{summary.publishedCount}</strong><span>Published lessons</span></div>
@@ -28,6 +28,6 @@ export function CurriculumRegister({
         </tbody>
       </table>
     </div>
-    <p className={styles.footnote}>This register provides status visibility, not an authoring or approval workflow. Protected lesson editing and approval will be introduced only with audit and content-version safeguards.</p>
+    <p className={styles.footnote}>Core assessment versions remain fixed and protected. Faculty supplements follow a separate, audited approval workflow and never change historical grades or hidden answer keys.</p>
   </section>;
 }

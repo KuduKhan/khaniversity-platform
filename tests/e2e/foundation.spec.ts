@@ -350,10 +350,10 @@ test("learning data disclosure is reachable without an account", async ({ page }
 
 test("five blueprint platforms and admissions have working public entry points", async ({ page }) => {
   await page.goto("/platforms");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Five platforms.");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Your academy.");
   for (const name of ["Public Site", "Student Portal", "Learning Studio", "Python CodeLab", "Academic Administration"])
     await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "One shared academic data foundation" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Move from a lesson to demonstrable skill" })).toBeVisible();
   await page.getByRole("link", { name: "Explore admissions" }).click();
   await expect(page).toHaveURL(/\/admissions$/);
   await expect(page.getByRole("heading", { name: "How to begin" })).toBeVisible();
