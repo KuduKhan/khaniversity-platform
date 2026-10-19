@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, useState } from "react";
 type Message = { role: "user" | "assistant"; content: string };
-export function Professor() {
+export function Professor({ moduleId = "computational-thinking", moduleTitle = "Computational thinking", studyGuide }: { moduleId?: string; moduleTitle?: string; studyGuide?: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [prompt, setPrompt] = useState("");
   const [busy, setBusy] = useState(false);
@@ -27,7 +27,7 @@ export function Professor() {
       const r = await fetch("/api/tutor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next, moduleId }),
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "Tutor unavailable");
@@ -50,7 +50,7 @@ export function Professor() {
           <span className="eyebrow">LESSON-GROUNDED SUPPORT</span>
           <h2>Ask the AI Professor</h2>
         </div>
-        <span className="tag">CS101</span>
+        <span className="tag">CS101 · {moduleTitle}</span>
       </div>
       <p>
         Ask for a hint, an example, or a step-by-step explanation. Your chat
@@ -69,14 +69,15 @@ export function Professor() {
           ))
         ) : (
           <div className="chat-empty">
-            Try: “Why does the total stay at zero when the list is empty?”
+            {moduleId === "computational-thinking" ? "Try: “Why does the total stay at zero when the list is empty?”" : `Try: “Help me understand ${moduleTitle.toLowerCase()}.”`}
           </div>
         )}
         {busy && <div className="chat-empty">Thinking through the lesson…</div>}
       </div>
       <div className="guide-actions" aria-label="Offline lesson guides">
         <span>QUICK LESSON GUIDES</span>
-        <button
+        {moduleId !== "computational-thinking" && <button type="button" onClick={() => showGuide(studyGuide || "State the key concept, trace a small example and test an edge case.")}>Review this lesson</button>}
+        {moduleId === "computational-thinking" && <button
           type="button"
           onClick={() =>
             showGuide(
@@ -85,8 +86,8 @@ export function Professor() {
           }
         >
           Hint: empty lists
-        </button>
-        <button
+        </button>}
+        {moduleId === "computational-thinking" && <button
           type="button"
           onClick={() =>
             showGuide(
@@ -95,8 +96,8 @@ export function Professor() {
           }
         >
           Explain input → process → output
-        </button>
-        <button
+        </button>}
+        {moduleId === "computational-thinking" && <button
           type="button"
           onClick={() =>
             showGuide(
@@ -105,7 +106,7 @@ export function Professor() {
           }
         >
           Show a decomposition example
-        </button>
+        </button>}
       </div>
       <form onSubmit={ask} className="professor-form">
         <label className="sr-only" htmlFor="professor-question">

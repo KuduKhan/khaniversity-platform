@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
+import { getCourseModule } from "@/modules/academics/curriculum";
 
 export const runtime = "nodejs";
 const requests = new Map<string, { count: number; start: number }>();
 const courseContext = `You are KHANIVERSITY Professor, a patient computer science tutor for beginner CS101. Teach through questions and short explanations. Ground answers in this lesson: computational thinking, input-process-output, decomposition, precise finite algorithms, tracing totals, and edge cases such as an empty list. Do not claim to know material outside this scope; say so and redirect to the course. Do not provide a full solution when a hint would teach better. Never request personal data. This is formative support, not grading.`;
 export async function POST(request: Request) {
+  if (request.headers.get("origin") !== new URL(request.url).origin)
+    return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
   const key = process.env.OPENAI_API_KEY;
   if (!key)
     return NextResponse.json(
@@ -22,7 +25,7 @@ export async function POST(request: Request) {
   if (!entry || now - entry.start >= 60_000)
     requests.set(ip, { count: 1, start: now });
   else entry.count++;
-  let body: { messages?: unknown };
+  let body: { messages?: unknown; moduleId?: unknown };
   try {
     const raw = await request.text();
     if (raw.length > 12_000)
@@ -46,6 +49,9 @@ export async function POST(request: Request) {
       { error: "Send one to eight recent messages." },
       { status: 400 },
     );
+  const requestedModule = typeof body.moduleId === "string" ? body.moduleId : "computational-thinking";
+  const currentModule = getCourseModule(requestedModule);
+  if (!currentModule) return NextResponse.json({ error: "Unknown CS101 lesson." }, { status: 400 });
   const messages = body.messages
     .filter(
       (m): m is { role: "user" | "assistant"; content: string } =>
@@ -71,7 +77,12 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         model: process.env.OPENAI_MODEL || "gpt-5-mini",
-        instructions: courseContext,
+        instructions: courseContext + "\nCurrent module: " + currentModule.title +
+          "\nLearning outcome: " + currentModule.outcome +
+          "\nApproved lesson material: " + currentModule.sections.map((section) =>
+            section.heading + ": " + section.body + (section.example ? "\nExample: " + section.example : "")
+          ).join("\n").slice(0, 6000) +
+          "\nSupport this module using only the approved material; never provide quiz answer keys or claim an official grade.",
         input: messages.map((m) => ({
           role: m.role,
           content: [{ type: "input_text", text: m.content }],

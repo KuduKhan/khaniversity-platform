@@ -293,6 +293,14 @@ test("six preview systems complete a diagnostic, Python challenge, labs and pass
   expect(evidence.verified).toBe(false);
   expect(evidence.records).toHaveLength(7);
 });
+test("tutor endpoint rejects cross-origin requests even without an AI key", async ({ request }) => {
+  const result = await request.post("/api/tutor", {
+    headers: { origin: "https://malicious.example" },
+    data: { moduleId: "computational-thinking", messages: [{ role: "user", content: "Help" }] },
+  });
+  expect(result.status()).toBe(403);
+});
+
 test("auth endpoint rejects cross-origin requests", async ({ request }) => {
   const response = await request.post("/api/auth", {
     headers: { origin: "https://example.invalid" },
