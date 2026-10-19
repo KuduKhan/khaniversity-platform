@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, useState } from "react";
 type Message = { role: "user" | "assistant"; content: string };
-export function Professor({ moduleId = "computational-thinking", moduleTitle = "Computational thinking", studyGuide }: { moduleId?: string; moduleTitle?: string; studyGuide?: string }) {
+export function Professor({ moduleId = "computational-thinking", moduleTitle = "Computational thinking", studyGuide, preview = false }: { moduleId?: string; moduleTitle?: string; studyGuide?: string; preview?: boolean }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [prompt, setPrompt] = useState("");
   const [busy, setBusy] = useState(false);
@@ -108,7 +108,7 @@ export function Professor({ moduleId = "computational-thinking", moduleTitle = "
           Show a decomposition example
         </button>}
       </div>
-      <form onSubmit={ask} className="professor-form">
+      {!preview ? <form onSubmit={ask} className="professor-form">
         <label className="sr-only" htmlFor="professor-question">
           Your question
         </label>
@@ -122,7 +122,7 @@ export function Professor({ moduleId = "computational-thinking", moduleTitle = "
         <button className="button gold" disabled={busy || !prompt.trim()}>
           {busy ? "Asking…" : "Ask"}
         </button>
-      </form>
+      </form> : <p className="fine-print">Live AI tutoring requires a signed-in CS101 student account. The lesson guides above remain available without an account.</p>}
       {error && (
         <p role="alert" className="save-error">
           {error}

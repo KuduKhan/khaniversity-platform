@@ -356,7 +356,7 @@ export function Lesson({
               </div>
             )}
           </section>
-          <Professor />
+          <Professor preview={preview} />
           <div className="next-lesson">
             <span className="eyebrow">NEXT / MODULE 02</span>
             <h3>Programming fundamentals & Python</h3>

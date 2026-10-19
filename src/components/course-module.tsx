@@ -145,7 +145,7 @@ export function CourseModule({
         {nextModule && <Link className="button" href={moduleUrl(nextModule)}>Continue to the next module <ArrowRight size={17} /></Link>}
         {module.project && <p className="fine-print">Course completion also requires a passing capstone review. A quiz score alone is not a certificate.</p>}
       </section>
-      <Professor moduleId={module.id} moduleTitle={module.title} studyGuide={module.sections[0]?.body} />
+      <Professor preview={preview} moduleId={module.id} moduleTitle={module.title} studyGuide={module.sections[0]?.body} />
     </div>
   );
 }

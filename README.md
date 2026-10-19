@@ -30,7 +30,7 @@ Supported roles are `instructor`, `reviewer`, and `administrator`. Instructors m
 
 ## Six core systems
 
-1. **AI Professor:** lesson-grounded tutor panel, authored hints and explanations, and a bounded server-side OpenAI Responses API integration. Live answers require a valid `OPENAI_API_KEY`; authored guides remain available without it. Tutor messages are not retained by the app.
+1. **AI Professor:** lesson-grounded tutor panel, authored hints and explanations, and a bounded server-side OpenAI Responses API integration. Live answers require a valid `OPENAI_API_KEY`, a signed-in CS101 learner and verified course enrollment; authored guides remain available in public preview. Per-account in-memory throttling is not a distributed quota and must be replaced or complemented before a high-volume pilot. Tutor messages are not retained by the app.
 2. **Adaptive Learning Engine:** six-question diagnostic with topic feedback and a recommended next activity. The recommendation is formative, not a validated learner model.
 3. **KHANIVERSITY CodeLab:** bundled Pyodide Python in an isolated browser worker, with bounded execution and a checked beginner challenge.
 4. **Virtual Technology Labs:** six interactive network, cloud, identity, storage, resilience and patching scenarios. These are simulations, not connected cloud infrastructure.

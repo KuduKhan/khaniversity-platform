@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCourseModule } from "@/modules/academics/curriculum";
+import { database, configured } from "@/lib/database/server";
 
 export const runtime = "nodejs";
 const requests = new Map<string, { count: number; start: number }>();
@@ -7,23 +8,40 @@ const courseContext = `You are KHANIVERSITY Professor, a patient computer scienc
 export async function POST(request: Request) {
   if (request.headers.get("origin") !== new URL(request.url).origin)
     return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
+  // Do not expose billable provider access to anonymous visitors.
+  // Public preview retains authored lesson guides without calling this endpoint.
+  if (!configured())
+    return NextResponse.json({ error: "Sign in to use live AI tutoring." }, { status: 401 });
+  const db = await database();
+  const { data: identity, error: authError } = await db.auth.getUser();
+  if (authError || !identity.user)
+    return NextResponse.json({ error: "Sign in to use live AI tutoring." }, { status: 401 });
+  const { data: enrollment, error: enrollmentError } = await db.from("enrollments")
+    .select("course_id")
+    .eq("user_id", identity.user.id)
+    .eq("course_id", "cs101")
+    .maybeSingle();
+  if (enrollmentError)
+    return NextResponse.json({ error: "Student enrollment could not be checked." }, { status: 503 });
+  if (!enrollment)
+    return NextResponse.json({ error: "Enroll in CS101 to use the AI Professor." }, { status: 403 });
+
   const key = process.env.OPENAI_API_KEY;
   if (!key)
     return NextResponse.json(
       { error: "The AI Professor is not configured on this server yet." },
       { status: 503 },
     );
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  const studentId = identity.user.id;
   const now = Date.now();
-  const entry = requests.get(ip);
+  const entry = requests.get(studentId);
   if (entry && now - entry.start < 60_000 && entry.count >= 10)
     return NextResponse.json(
       { error: "Please wait a minute before asking another question." },
       { status: 429 },
     );
   if (!entry || now - entry.start >= 60_000)
-    requests.set(ip, { count: 1, start: now });
+    requests.set(studentId, { count: 1, start: now });
   else entry.count++;
   let body: { messages?: unknown; moduleId?: unknown };
   try {

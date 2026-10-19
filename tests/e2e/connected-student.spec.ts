@@ -54,3 +54,40 @@ test("connected student can enroll, run Python, pass CS101 and resume saved prog
   await page.reload();
   await expect(page.getByText("2 / 10 modules mastered")).toBeVisible();
 });
+
+
+const emailB = process.env.KHANIVERSITY_E2E_EMAIL_2;
+const passwordB = process.env.KHANIVERSITY_E2E_PASSWORD_2;
+
+test("two real browser accounts cannot see each other's CS101 project draft", async ({ page, browser }) => {
+  test.skip(!emailB || !passwordB, "Second designated Supabase Auth test learner is not configured");
+  await page.goto("/signin");
+  await page.getByLabel("Email address").fill(email!);
+  await page.getByLabel(/Password/).fill(password!);
+  await page.getByRole("button", { name: /Sign in to your academy/ }).click();
+  await expect(page).toHaveURL(/\/dashboard$/, { timeout: 20_000 });
+  const enrollA = page.getByRole("button", { name: /Enroll in CS101/ });
+  if (await enrollA.count()) await enrollA.click();
+  await page.goto("/learn/cs101/personal-study-planner-capstone");
+  const privateName = "CS101 learner A private draft";
+  await page.getByRole("textbox", { name: "Project name" }).fill(privateName);
+  await page.getByRole("button", { name: "Save project draft" }).click();
+  await expect(page.getByRole("status")).toContainText("Private project draft saved");
+
+  const contextB = await browser.newContext();
+  try {
+    const other = await contextB.newPage();
+    await other.goto("/signin");
+    await other.getByLabel("Email address").fill(emailB!);
+    await other.getByLabel(/Password/).fill(passwordB!);
+    await other.getByRole("button", { name: /Sign in to your academy/ }).click();
+    await expect(other).toHaveURL(/\/dashboard$/, { timeout: 20_000 });
+    const enrollB = other.getByRole("button", { name: /Enroll in CS101/ });
+    if (await enrollB.count()) await enrollB.click();
+    await other.goto("/learn/cs101/personal-study-planner-capstone");
+    await expect(other.getByRole("heading", { level: 1 })).toContainText("Capstone");
+    await expect(other.getByRole("textbox", { name: "Project name" })).not.toHaveValue(privateName);
+  } finally {
+    await contextB.close();
+  }
+});
