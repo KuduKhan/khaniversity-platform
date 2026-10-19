@@ -27,7 +27,7 @@ test("operational blueprint migration separates account code from reviewed evide
     for (const file of [
       "supabase/migrations/20261018131843_foundation.sql",
       "supabase/migrations/20261019090000_virtual_university.sql",
-      "supabase/migrations/20261019191000_operational_blueprint.sql",
+      "supabase/migrations/20261019192741_operational_blueprint.sql",
     ]) await db.exec(await readFile(file,"utf8"));
     await db.exec(`insert into public.course_staff(user_id,course_id,role) values
       ('${instructor}','cs101','instructor'),

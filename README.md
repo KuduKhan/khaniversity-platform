@@ -64,7 +64,7 @@ test gate, not an unauthenticated visual regression claim.
 
 The blueprint now includes **real student code submissions** (account-scoped `code_submissions`) and **independent faculty content approvals** (`lesson_revisions`). The existing `/admin` route exposes proposals, CodeLab verification, enrollment counts and auditable role assignment for an existing, confirmed account. The signed-in `/codelab` route submits Python source as *pending human review* and shows feedback/history; it never awards a score based on untrusted browser-reported tests. Reviewers publish supplementary explanatory material only after a separate staff member approves it, without mutating existing hidden assessment answer keys or previous grades.
 
-Apply the additive migration `supabase/migrations/20261019191000_operational_blueprint.sql` **before deploying this branch**. It requires the prior two migrations. Bootstrap the *first* verified administrator by a trusted operator after account creation; public signup cannot grant academic roles. Authenticated staff pages and real end-to-end account acceptance still require the connected release-validation credentials.
+Apply the additive migration `supabase/migrations/20261019192741_operational_blueprint.sql` **before deploying this branch**. It requires the prior two migrations. Bootstrap the *first* verified administrator by a trusted operator after account creation; public signup cannot grant academic roles. Authenticated staff pages and real end-to-end account acceptance still require the connected release-validation credentials.
 
 ## Premium campus interface
 
