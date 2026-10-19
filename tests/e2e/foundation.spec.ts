@@ -348,6 +348,19 @@ test("learning data disclosure is reachable without an account", async ({ page }
   await expect(page.getByRole("heading", { name: "Before the public learner pilot" })).toBeVisible();
 });
 
+test("five blueprint platforms and admissions have working public entry points", async ({ page }) => {
+  await page.goto("/platforms");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Five platforms.");
+  for (const name of ["Public Site", "Student Portal", "Learning Studio", "Python CodeLab", "Academic Administration"])
+    await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "One shared academic data foundation" })).toBeVisible();
+  await page.getByRole("link", { name: "Explore admissions" }).click();
+  await expect(page).toHaveURL(/\/admissions$/);
+  await expect(page.getByRole("heading", { name: "How to begin" })).toBeVisible();
+  await page.getByRole("link", { name: "Try the Student Portal" }).click();
+  await expect(page).toHaveURL(/\/preview\/dashboard$/);
+});
+
 test("auth endpoint rejects cross-origin requests", async ({ request }) => {
   const response = await request.post("/api/auth", {
     headers: { origin: "https://example.invalid" },
