@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./premium.css";
 import { PwaRegister } from "@/components/pwa-register";
 export const metadata: Metadata = {
   title: "KHANIVERSITY — Learn. Build. Innovate. Master.",

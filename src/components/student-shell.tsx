@@ -113,7 +113,7 @@ export function StudentShell({
       <div className="workspace">
         <header className="workspace-header">
           <span>
-            Academy <span className="slash">/</span>{" "}
+            <Link className="workspace-breadcrumb" href={`${base}/dashboard`}>StudentOS</Link> <span className="slash">/</span>{" "}
             {(
               {
                 lesson: "Learning Studio",

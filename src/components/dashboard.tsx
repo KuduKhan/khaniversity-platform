@@ -8,6 +8,8 @@ import {
   Check,
   Clock3,
   Target,
+  Code2,
+  Award,
   Braces,
 } from "lucide-react";
 import { courseModules } from "@/modules/academics/curriculum";
@@ -76,6 +78,23 @@ export function Dashboard({
           <p>Small steps. Clear understanding. Lasting progress.</p>
         </div>
       </div>
+      <nav className="study-shortcuts" aria-label="Learning workspace shortcuts">
+        <Link href={`${base}/learn/cs101/computational-thinking`}>
+          <span className="study-shortcut-icon"><BookOpen size={19} aria-hidden /></span>
+          <span><strong>Learning Studio</strong><small>Continue a guided lesson</small></span>
+          <ArrowRight size={17} aria-hidden />
+        </Link>
+        <Link href={`${base}/codelab`}>
+          <span className="study-shortcut-icon"><Code2 size={19} aria-hidden /></span>
+          <span><strong>Python CodeLab</strong><small>Write, run and refine</small></span>
+          <ArrowRight size={17} aria-hidden />
+        </Link>
+        <Link href={`${base}/passport`}>
+          <span className="study-shortcut-icon"><Award size={19} aria-hidden /></span>
+          <span><strong>Skills Passport</strong><small>Review learning evidence</small></span>
+          <ArrowRight size={17} aria-hidden />
+        </Link>
+      </nav>
       <section className="welcome-panel">
         <div>
           <span className="tag">COMPUTER SCIENCE ACADEMY</span>
