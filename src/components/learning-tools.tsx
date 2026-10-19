@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   diagnosticQuestions,
   gradeDiagnostic,
@@ -124,24 +124,35 @@ type WorkerReply = {
   stage?: string;
   passed?: boolean;
 };
+function subscribeCodeDraft(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener("khaniversity-codelab-draft", onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener("khaniversity-codelab-draft", onChange);
+  };
+}
+
 export function CodeLab({ preview = true, accountId }: { preview?: boolean; accountId?: string }) {
   const { state } = usePreviewRecord();
-  const [code, setCode] = useState(starterPython);
-  const [draftReady, setDraftReady] = useState(false);
   const draftKey = codelabDraftKey(preview, accountId);
-  useEffect(() => {
+  const storedDraft = useSyncExternalStore(
+    subscribeCodeDraft,
+    () => {
+      try { return safeDraft(localStorage.getItem(draftKey)); }
+      catch { return null; }
+    },
+    () => null,
+  );
+  const [edited, setEdited] = useState<{ key: string; code: string } | null>(null);
+  const code = edited?.key === draftKey ? edited.code : (storedDraft ?? starterPython);
+  function editCode(next: string) {
+    setEdited({ key: draftKey, code: next });
     try {
-      const saved = safeDraft(localStorage.getItem(draftKey));
-      if (saved !== null) setCode(saved);
-    } catch {
-      // Private browsing or disabled storage still allows in-memory practice.
-    }
-    setDraftReady(true);
-  }, [draftKey]);
-  useEffect(() => {
-    if (!draftReady) return;
-    try { localStorage.setItem(draftKey, code); } catch { /* Local storage is optional. */ }
-  }, [code, draftKey, draftReady]);
+      localStorage.setItem(draftKey, next);
+      window.dispatchEvent(new Event("khaniversity-codelab-draft"));
+    } catch { /* Keep the editable in-memory code even when storage is denied. */ }
+  }
   const [status, setStatus] = useState("Starting Python…");
   const [output, setOutput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -208,9 +219,9 @@ export function CodeLab({ preview = true, accountId }: { preview?: boolean; acco
     }, 8000);
   }
   function resetDraft() {
-    setCode(starterPython);
+    setEdited({ key: draftKey, code: starterPython });
     setOutput("");
-    try { localStorage.removeItem(draftKey); } catch { /* Storage is optional. */ }
+    try { localStorage.removeItem(draftKey); window.dispatchEvent(new Event("khaniversity-codelab-draft")); } catch { /* Storage is optional. */ }
   }
   function exportPython() {
     const file = new Blob([code + "\n"], { type: "text/x-python;charset=utf-8" });
@@ -245,9 +256,9 @@ export function CodeLab({ preview = true, accountId }: { preview?: boolean; acco
           spellCheck={false}
           maxLength={6000}
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) => editCode(e.target.value)}
         />
-        <p className="fine-print" role="status">{draftReady ? "Draft is kept in this browser only · not submitted for grading" : "Loading your private browser draft…"}</p>
+        <p className="fine-print" role="status">Draft is kept in this browser only · not submitted for grading</p>
         <div className="tool-actions">
           <button
             className="button outline"
