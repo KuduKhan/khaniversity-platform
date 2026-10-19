@@ -175,3 +175,44 @@ create policy lesson_progress_course_staff_read on public.lesson_progress
       where l.id=lesson_progress.lesson_id and l.content_version=lesson_progress.content_version
         and private.has_course_role(m.course_id,array['instructor','reviewer','administrator']))
   );
+
+-- Role-bound course administration. Only an existing course administrator
+-- can assign access to another already-confirmed account. No self-enrollment.
+create policy course_staff_administrator_read on public.course_staff
+  for select to authenticated using (
+    private.has_course_role(course_id,array['administrator'])
+  );
+
+create function private.assign_cs101_staff(p_email text,p_role text)
+returns uuid language plpgsql security definer set search_path='' as $$
+declare target_user uuid;
+begin
+  if auth.uid() is null or not private.has_course_role('cs101',array['administrator']) then
+    raise exception 'Administrator authorization required' using errcode='42501';
+  end if;
+  if p_role not in ('instructor','reviewer','administrator') then
+    raise exception 'Invalid staff role';
+  end if;
+  if p_email is null or length(btrim(p_email)) < 5 or length(p_email)>254 then
+    raise exception 'Supply an account email address';
+  end if;
+  select id into target_user from auth.users
+    where lower(email)=lower(btrim(p_email))
+      and email_confirmed_at is not null;
+  if target_user is null then raise exception 'No confirmed account matches this email'; end if;
+  if target_user=auth.uid() then raise exception 'Self-assignment is not permitted' using errcode='42501'; end if;
+  insert into public.course_staff(user_id,course_id,role)
+    values(target_user,'cs101',p_role) on conflict do nothing;
+  insert into public.audit_logs(actor_id,target_user_id,course_id,action,details)
+    values(auth.uid(),target_user,'cs101','staff.role_assigned',jsonb_build_object('role',p_role));
+  return target_user;
+end;
+$$;
+revoke all on function private.assign_cs101_staff(text,text) from public,anon;
+grant execute on function private.assign_cs101_staff(text,text) to authenticated;
+create function public.assign_cs101_staff(p_email text,p_role text)
+returns uuid language sql security invoker set search_path='' as $$
+  select private.assign_cs101_staff(p_email,p_role);
+$$;
+revoke all on function public.assign_cs101_staff(text,text) from public,anon;
+grant execute on function public.assign_cs101_staff(text,text) to authenticated;
