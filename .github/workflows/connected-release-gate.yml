@@ -1,0 +1,40 @@
+name: Connected release approval gate
+
+on:
+  push:
+    branches: [release/live-validation-gates-20261019]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connected-acceptance:
+    name: Real Supabase two-account acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: release-validation
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.KHANIVERSITY_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.KHANIVERSITY_SUPABASE_PUBLISHABLE_KEY }}
+      KHANIVERSITY_EXPECTED_PROJECT_REF: ${{ vars.KHANIVERSITY_EXPECTED_PROJECT_REF }}
+      KHANIVERSITY_E2E_EMAIL: ${{ secrets.KHANIVERSITY_E2E_EMAIL }}
+      KHANIVERSITY_E2E_PASSWORD: ${{ secrets.KHANIVERSITY_E2E_PASSWORD }}
+      KHANIVERSITY_E2E_EMAIL_2: ${{ secrets.KHANIVERSITY_E2E_EMAIL_2 }}
+      KHANIVERSITY_E2E_PASSWORD_2: ${{ secrets.KHANIVERSITY_E2E_PASSWORD_2 }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Fail closed when live test identities or target are missing
+        run: node scripts/require-connected-release-env.mjs
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Run real CS101 journey and two-account isolation
+        run: npx playwright test tests/e2e/connected-student.spec.ts
