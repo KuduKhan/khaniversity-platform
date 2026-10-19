@@ -43,6 +43,23 @@ The preview tools remain available at `/preview/path`, `/preview/codelab`, `/pre
 
 Students can request password recovery at `/recover`. PKCE email links return through `/auth/callback`, which exchanges the code server-side; `/reset-password` updates the password and signs the student out. Add your deployed HTTPS origin and `https://YOUR-DOMAIN/auth/callback` to Supabase Auth Redirect URLs and configure reliable SMTP. Recovery emails use neutral responses to avoid confirming account existence. Verify delivery, expiry, password update and a new sign-in with a designated test account before launch.
 
+
+## Responsive content-fit verification
+
+KHANIVERSITY uses a content-first layout layer in `src/app/responsive.css`,
+loaded after the premium design styles. Academic copy, long course names, progress
+and navigation cards reflow inside their containers; code samples, the Python
+editor and academic tables retain **internal horizontal scrolling** when their
+content cannot meaningfully wrap. The document itself must not develop an
+unwanted horizontal scrollbar.
+
+`tests/e2e/responsive.spec.ts` checks public campus and student preview
+pages at **320, 375, 430, 768, 1024, 1440 and 1920 CSS pixels**, plus
+extra-long labels at phone, tablet and laptop widths. Verify on actual devices
+and at 200%/400% text zoom as part of final accessibility QA. Protected staff
+and real learner account records remain part of the separate connected-account
+test gate, not an unauthenticated visual regression claim.
+
 ## Premium campus interface
 
 The public site and StudentOS use one scoped premium design layer (`src/app/premium.css`) with responsive, keyboard-accessible navigation. On smaller screens, activate the **Menu** control to browse the five campus destinations; the existing student workspace has its own collapsible sidebar. StudentOS now offers direct Learning Studio, Python CodeLab, and Skills Passport shortcuts, while keeping local preview and official student records distinct.

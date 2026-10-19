@@ -90,3 +90,32 @@ test("long form content remains visible and can scroll within its own container"
   await expect(page.getByRole("textbox", { name: "Python editor" })).toBeVisible();
   await checkFit(page, "/preview/codelab", 320);
 });
+
+test("long course titles, status labels and student shortcuts wrap without clipping", async ({ page }) => {
+  test.setTimeout(45_000);
+  for (const width of [320, 768, 1024]) {
+    await page.setViewportSize({ width, height: 812 });
+    const stress = "KHANIVERSITY" + "ComputerScienceFoundations".repeat(7);
+    for (const path of ["/", "/platforms", "/preview/dashboard"]) {
+      await page.goto(path);
+      const selector = path === "/" ? ".system-card h3" : path === "/platforms" ? "main article h3" : ".study-shortcuts strong";
+      const target = page.locator(selector).first();
+      await expect(target).toBeVisible();
+      await target.evaluate((el, word) => { el.textContent = word; }, stress);
+      const layout = await target.evaluate(el => {
+        const card = el.closest(".system-card, article, a")!;
+        const text = el.getBoundingClientRect();
+        const parent = card.getBoundingClientRect();
+        return {
+          left: text.left, right: text.right,
+          containerLeft: parent.left, containerRight: parent.right,
+          scrollWidth: document.documentElement.scrollWidth,
+          clientWidth: document.documentElement.clientWidth,
+        };
+      });
+      expect(layout.right, `${path} (${width}px) text escaped its parent`).toBeLessThanOrEqual(layout.containerRight + 2);
+      expect(layout.left).toBeGreaterThanOrEqual(layout.containerLeft - 2);
+      expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 2);
+    }
+  }
+});

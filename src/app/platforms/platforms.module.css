@@ -36,3 +36,19 @@
 @media(max-width:900px){.card:nth-child(n) {grid-column:span 3;} .domains {grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:640px){.wrap{padding:20px 14px 60px;} .hero{border-radius:18px;} .cards{grid-template-columns:1fr;} .card:nth-child(n){grid-column:span 1;} .domains{grid-template-columns:1fr;} .sectionHead{margin-top:35px;}}
 @media(prefers-reduced-motion:reduce){.primary,.secondary {transition:none;}}
+
+/* Resilient wrapping for future academic titles, admission notices and labels. */
+.wrap, .hero, .cards, .card, .sectionHead, .architecture, .domains { min-width:0; max-width:100%; }
+.card > *, .hero > *, .domains > li > * { min-width:0; max-width:100%; }
+.card :is(h3,p,li), .hero :is(h1,p), .domains li, .sectionHead :is(h2,p) { overflow-wrap:anywhere; }
+.card .access, .meta span, .domains small { white-space:normal; overflow-wrap:anywhere; }
+.domains li { align-items:start; flex-wrap:wrap; }
+.links { flex-wrap:wrap; }
+.primary, .secondary { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+@media(max-width:370px) {
+  .card { padding:19px; }
+  .hero { padding:24px 20px; }
+  .hero h1 { font-size:clamp(31px,10vw,42px); }
+  .meta span { font-size:10px; }
+  .domains li { gap:4px 12px; }
+}
