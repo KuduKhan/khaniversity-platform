@@ -1,7 +1,8 @@
+import { isSameOriginRequest } from "@/lib/security/origin";
 import { NextResponse } from "next/server";
 import { database, configured } from "@/lib/database/server";
 export async function POST(request: Request) {
-  if (request.headers.get("origin") !== new URL(request.url).origin)
+  if (!isSameOriginRequest(request))
     return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
   if (!configured())
     return NextResponse.json(
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
   const db = await database();
   const { data, error } =
     mode === "signup"
-      ? await db.auth.signUp({ email, password, options: { emailRedirectTo: `${new URL(request.url).origin}/auth/callback?next=/dashboard` } })
+      ? await db.auth.signUp({ email, password, options: { emailRedirectTo: `${request.headers.get("origin")}/auth/callback?next=/dashboard` } })
       : await db.auth.signInWithPassword({ email, password });
   if (error)
     return NextResponse.json(

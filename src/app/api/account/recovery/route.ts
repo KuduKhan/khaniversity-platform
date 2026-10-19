@@ -1,9 +1,10 @@
+import { isSameOriginRequest } from "@/lib/security/origin";
 import { NextResponse } from "next/server";
 import { configured, database } from "@/lib/database/server";
 
 export async function POST(request: Request) {
-  const origin = new URL(request.url).origin;
-  if (request.headers.get("origin") !== origin)
+  const origin = request.headers.get("origin") ?? "";
+  if (!isSameOriginRequest(request))
     return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
   if (!configured())
     return NextResponse.json({ error: "Account recovery is not configured." }, { status: 503 });
