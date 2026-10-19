@@ -43,6 +43,10 @@ The preview tools remain available at `/preview/path`, `/preview/codelab`, `/pre
 
 Students can request password recovery at `/recover`. PKCE email links return through `/auth/callback`, which exchanges the code server-side; `/reset-password` updates the password and signs the student out. Add your deployed HTTPS origin and `https://YOUR-DOMAIN/auth/callback` to Supabase Auth Redirect URLs and configure reliable SMTP. Recovery emails use neutral responses to avoid confirming account existence. Verify delivery, expiry, password update and a new sign-in with a designated test account before launch.
 
+## Premium campus interface
+
+The public site and StudentOS use one scoped premium design layer (`src/app/premium.css`) with responsive, keyboard-accessible navigation. On smaller screens, activate the **Menu** control to browse the five campus destinations; the existing student workspace has its own collapsible sidebar. StudentOS now offers direct Learning Studio, Python CodeLab, and Skills Passport shortcuts, while keeping local preview and official student records distinct.
+
 ## The five blueprint platforms
 
 Visit `/platforms` for the university's five original connected interfaces,

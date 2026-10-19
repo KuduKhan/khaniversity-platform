@@ -411,25 +411,52 @@ test("mobile workspace menu is compact, keyboard accessible and closes on naviga
   await expect(page.getByRole("button", { name: "Open navigation menu" })).toBeHidden();
 });
 
-test("phone header exposes two accessible shortcuts and sign in directly", async ({ page }) => {
-  for (const width of [320, 375, 640, 768, 1440]) {
-    await page.setViewportSize({ width, height: 800 });
+test("premium campus navigation stays operable on phones and desktop", async ({ page }) => {
+  for (const width of [320, 375, 640, 768, 1120, 1440]) {
+    await page.setViewportSize({ width, height: 850 });
     await page.goto("/");
     const navigation = page.getByRole("navigation", { name: "Main navigation" });
-    await expect(navigation.getByRole("link")).toHaveCount(3);
-    for (const name of ["Explore the academy", "Learning workspace", "Sign in"])
+    const toggle = page.getByRole("button", { name: "Open site menu" });
+    const isCompact = width <= 1120;
+    if (isCompact) {
+      await expect(navigation).toBeHidden();
+      await expect(toggle).toBeVisible();
+      await expect(toggle).toHaveAttribute("aria-expanded", "false");
+      await toggle.click();
+      await expect(navigation).toBeVisible();
+      await expect(page.getByRole("button", { name: "Close site menu" })).toHaveAttribute("aria-expanded", "true");
+    } else {
+      await expect(navigation).toBeVisible();
+      await expect(toggle).toBeHidden();
+    }
+    for (const name of ["Platforms", "Explore the academy", "Getting started", "Sign in", "Learning workspace"])
       await expect(navigation.getByRole("link", { name, exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Open main menu" })).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    const brand = await page.locator(".public-header > .brand").boundingBox();
-    const links = await navigation.boundingBox();
-    expect(brand && links && brand.x + brand.width <= links.x).toBeTruthy();
+    const hero = await page.locator(".hero").boundingBox();
+    expect(hero?.width).toBeGreaterThan(250);
+    if (isCompact) {
+      await page.keyboard.press("Escape");
+      await expect(toggle).toBeFocused();
+      await expect(navigation).toBeHidden();
+    }
   }
-  await page.setViewportSize({ width: 320, height: 800 });
-  const navigation = page.getByRole("navigation", { name: "Main navigation" });
-  await navigation.getByRole("link", { name: "Explore the academy" }).click();
-  await expect(page).toHaveURL(/\/catalog$/);
-  await expect(navigation.getByRole("link", { name: "Explore the academy" })).toHaveAttribute("aria-current", "page");
-  await navigation.getByRole("link", { name: "Learning workspace" }).click();
-  await expect(page).toHaveURL(/\/preview\/dashboard$/);
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open site menu" }).click();
+  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Platforms" }).click();
+  await expect(page).toHaveURL(/\/platforms$/);
+  await expect(page.getByRole("navigation", { name: "Main navigation" })).toBeHidden();
+  await page.getByRole("button", { name: "Open site menu" }).click();
+  await expect(page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Platforms" })).toHaveAttribute("aria-current", "page");
+});
+
+test("premium StudentOS keeps its primary study actions accessible at mobile sizes", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/preview/dashboard");
+  const shortcuts = page.getByRole("navigation", { name: "Learning workspace shortcuts" });
+  for (const link of ["Learning Studio", "Python CodeLab", "Skills Passport"])
+    await expect(shortcuts.getByRole("link", { name: new RegExp(link) })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await shortcuts.getByRole("link", { name: /Python CodeLab/ }).click();
+  await expect(page).toHaveURL(/\/preview\/codelab$/);
 });

@@ -52,6 +52,12 @@ or `feature_flags` without reviewed migrations, ownership/RLS decisions and
 an approved connected release gate. Account-backed grade data is not inferred
 from browser-only code drafts.
 
+## Premium UI/UX refinement (October 2026)
+
+A new scoped `src/app/premium.css` layer strengthens the shared navy / gold visual identity without rewriting the mature foundation stylesheet. This covers legible editorial typography, consistent radii and elevation, responsive campus navigation, accessible 44px+ interaction targets, mobile-friendly StudentOS shortcuts, modern reading and Python editor surfaces, and constrained animation with reduced-motion support. The public menu now opens accessibly at phone/tablet widths with Escape-to-close, keyboard focus restoration, and current-route feedback. The StudentOS quick access row links to live preview-compatible lesson, coding and evidence routes.
+
+The visual change does not alter course grading, ownership, Supabase migrations, academic accreditation, or the controlled-release approval gate. Verify the design across phone/tablet/desktop resolutions and high zoom before deployment.
+
 ## External setup boundaries
 
 The full application runs locally without cloud credentials in preview mode. Account-backed learning requires applying both ordered Supabase migrations and setting the public project URL and publishable key. Live AI requires a valid server-only provider key. Labs currently simulate infrastructure rather than provision cloud resources. Email delivery, public hosting and an institutional accreditation process are external operations and are not represented as completed.
