@@ -83,6 +83,19 @@
   -webkit-overflow-scrolling: touch;
   white-space: pre;
 }
+/* Explicit specificity overrides the old phone rule that clipped code
+   examples with overflow-x:hidden. Allow internal horizontal scroll instead. */
+.module-reading pre,
+.lesson-content pre,
+.module-project pre,
+.review-card pre,
+.peer-project pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+}
 :where(.tool-panel, .module-reading, .module-project, .module-check,
   .lesson-content) :where(code) { font-family: "Cascadia Code", Consolas, ui-monospace, monospace; }
 :where(.module-project .project-editor,
