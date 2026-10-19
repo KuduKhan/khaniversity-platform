@@ -329,6 +329,12 @@ test("CodeLab isolates Python runs, so stale functions cannot pass a fresh check
   await expect(page.getByRole("button", { name: "Run challenge checks" })).toBeEnabled();
 });
 
+test("learning data disclosure is reachable without an account", async ({ page }) => {
+  await page.goto("/privacy");
+  await expect(page.getByRole("heading", { name: "Your learning data matters." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Before the public learner pilot" })).toBeVisible();
+});
+
 test("auth endpoint rejects cross-origin requests", async ({ request }) => {
   const response = await request.post("/api/auth", {
     headers: { origin: "https://example.invalid" },

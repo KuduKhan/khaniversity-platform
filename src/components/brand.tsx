@@ -65,6 +65,7 @@ export function Footer() {
       </aside>
       <div className="footer-bottom">
         <small>© {new Date().getFullYear()} KHANIVERSITY</small>
+        <Link href="/privacy">Learning data & privacy</Link>
         <span>Virtual University</span>
       </div>
     </footer>

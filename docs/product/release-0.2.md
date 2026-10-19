@@ -33,6 +33,8 @@ The final-phase social layer is represented by account-backed cohorts, discussio
 - The release remains a modular monolith and requires dedicated live-account,
   privacy, security, accessibility and production checks before public rollout.
 
+A public-facing learning-data disclosure is available at `/privacy`. It deliberately flags retention, deletion, data-controller contact, and legal-governance decisions as incomplete rather than asserting unverified compliance.
+
 ## External setup boundaries
 
 The full application runs locally without cloud credentials in preview mode. Account-backed learning requires applying both ordered Supabase migrations and setting the public project URL and publishable key. Live AI requires a valid server-only provider key. Labs currently simulate infrastructure rather than provision cloud resources. Email delivery, public hosting and an institutional accreditation process are external operations and are not represented as completed.

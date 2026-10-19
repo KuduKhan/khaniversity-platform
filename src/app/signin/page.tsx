@@ -41,7 +41,7 @@ export default function SignIn() {
           </Link>
           <p className="fine">
             Preview progress is saved on this device. No account or personal
-            details required.
+            details required. <Link href="/privacy">How learning data is handled</Link>.
           </p>
         </section>
       </main>
