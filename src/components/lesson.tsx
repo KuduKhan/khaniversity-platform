@@ -347,7 +347,7 @@ export function Lesson({
                 </h3>
                 <p>
                   {result.passed
-                    ? "Your progress is saved. The next lessons are in development."
+                    ? "Your progress is saved. Continue with Programming fundamentals & Python."
                     : "Review the explanations above and try again when you’re ready. Your highest score is kept."}
                 </p>
                 <Link className="text-link" href={`${base}/dashboard`}>

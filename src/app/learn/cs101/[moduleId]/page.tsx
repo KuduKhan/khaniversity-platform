@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { StudentShell } from "@/components/student-shell";
 import { CourseModule } from "@/components/course-module";
 import { getCourseModule } from "@/modules/academics/curriculum";
+import { redactAssessmentAnswers } from "@/modules/academics/transport";
 import { requireStudent } from "@/lib/database/server";
 
 export const dynamic = "force-dynamic";
@@ -14,11 +15,20 @@ export default async function StudentCourseModule({
   const { moduleId } = await params;
   const courseModule = getCourseModule(moduleId);
   if (!courseModule || moduleId === "computational-thinking") notFound();
-  const { db, email } = await requireStudent();
+  const { db, id, email } = await requireStudent();
+  const { data: enrollment, error: enrollmentError } = await db
+    .from("enrollments")
+    .select("course_id")
+    .eq("user_id", id)
+    .eq("course_id", "cs101")
+    .maybeSingle();
+  if (enrollmentError) throw new Error("Unable to verify your course enrollment.");
+  if (!enrollment) redirect("/dashboard");
   const { data } = await db
     .from("lesson_progress")
     .select("score")
-      .eq("lesson_id", courseModule.id)
+    .eq("user_id", id)
+    .eq("lesson_id", courseModule.id)
     .order("score", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -26,13 +36,14 @@ export default async function StudentCourseModule({
     ? await db
         .from("project_drafts")
         .select("title,source_code,reflection")
+        .eq("user_id", id)
         .eq("course_id", "cs101")
         .maybeSingle()
     : { data: null };
   return (
     <StudentShell preview={false} active="lesson" email={email}>
       <CourseModule
-        module={courseModule}
+        module={redactAssessmentAnswers(courseModule)}
         preview={false}
         initialScore={data?.score ?? null}
         initialDraft={draftResult.data ? {

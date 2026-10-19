@@ -41,7 +41,7 @@ export function Dashboard({
     index === 0
       ? !state.completed
       : (state.moduleProgress?.[module.id]?.score ?? 0) < 80,
-  ) ?? courseModules[0];
+  ) ?? courseModules[courseModules.length - 1];
   const moduleHref = (id: string) => `${base}/learn/cs101/${id}`;
   async function join() {
     setBusy(true);
@@ -93,7 +93,7 @@ export function Dashboard({
               className="button gold"
               href={moduleHref(nextModule.id)}
             >
-              {state.completed ? "Continue your pathway" : "Continue learning"}{" "}
+              {completedModules === courseModules.length ? "Review your capstone" : "Continue learning"}{" "}
               <ArrowRight size={17} />
             </Link>
           ) : (

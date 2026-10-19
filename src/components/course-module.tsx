@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Save } from "lucide-react";
 import { completeModule, saveCapstoneDraft } from "@/modules/enrollments/actions";
-import type { ModuleLesson } from "@/modules/academics/curriculum";
+import type { LearnerModule } from "@/modules/academics/transport";
 import { savePreview, usePreviewRecord } from "./preview-store";
 
 export function CourseModule({
@@ -12,19 +12,20 @@ export function CourseModule({
   initialScore = null,
   initialDraft,
 }: {
-  module: ModuleLesson;
+  module: LearnerModule;
   preview: boolean;
   initialScore?: number | null;
   initialDraft?: { title: string; code: string; reflection: string } | null;
 }) {
   const { state } = usePreviewRecord();
-  const existing = state.moduleProgress?.[module.id]?.score ?? initialScore;
+  // Never mix untrusted browser-local preview records with authenticated evidence.
+  const existing = preview ? (state.moduleProgress?.[module.id]?.score ?? null) : initialScore;
   const [answers, setAnswers] = useState<number[]>(Array(5).fill(-1));
   const [score, setScore] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [draftOverride, setDraftOverride] = useState<typeof initialDraft>(null);
-  const draft = draftOverride ?? state.projectDraft ?? initialDraft ?? {
+  const draft = draftOverride ?? (preview ? state.projectDraft : initialDraft) ?? {
     title: "Personal Study Planner",
     code: "# Build your study planner here\n\ntasks = []\n",
     reflection: "",
@@ -129,7 +130,7 @@ export function CourseModule({
               <legend><span>{String(i + 1).padStart(2, "0")}</span>{question.prompt}</legend>
               {question.options.map((option, j) => (
                 <label className="quiz-option" key={option}>
-                  <input type="radio" name={`module-${module.id}-q-${i}`} value={j} checked={answers[i] === j} onChange={() => setAnswers((current) => current.map((a, k) => k === i ? j : a))} />
+                  <input type="radio" name={`module-${module.id}-q-${i}`} value={j} checked={answers[i] === j} onChange={() => { setAnswers((current) => current.map((a, k) => k === i ? j : a)); setScore(null); }} />
                   {option}
                 </label>
               ))}
