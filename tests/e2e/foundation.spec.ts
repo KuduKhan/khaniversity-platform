@@ -293,12 +293,17 @@ test("six preview systems complete a diagnostic, Python challenge, labs and pass
   expect(evidence.verified).toBe(false);
   expect(evidence.records).toHaveLength(7);
 });
-test("tutor endpoint rejects anonymous requests before any billable provider call", async ({ request }) => {
-  const result = await request.post("/api/tutor", {
-    headers: { origin: "http://127.0.0.1:3000" },
-    data: { moduleId: "computational-thinking", messages: [{ role: "user", content: "Help me learn" }] },
+test("tutor endpoint rejects anonymous requests before any billable provider call", async ({ page }) => {
+  await page.goto("/");
+  const status = await page.evaluate(async () => {
+    const response = await fetch("/api/tutor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ moduleId: "computational-thinking", messages: [{ role: "user", content: "Help me learn" }] }),
+    });
+    return response.status;
   });
-  expect(result.status()).toBe(401);
+  expect(status).toBe(401);
 });
 
 test("tutor endpoint rejects cross-origin requests even without an AI key", async ({ request }) => {
