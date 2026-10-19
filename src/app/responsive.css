@@ -1,0 +1,186 @@
+/* KHANIVERSITY — content-first responsive containment.
+   Imported after premium.css. Never hide document overflow to mask defects:
+   structured content must reflow; code and tables scroll within their panels. */
+
+/* Grid and flex items must be allowed to shrink below intrinsic text widths. */
+:where(.workspace, .workspace > main, .student-shell, .sidebar,
+  .dashboard, .dashboard-columns, .learning-path, .right-rail,
+  .page-heading, .welcome-panel, .stats, .stats article,
+  .study-shortcuts, .study-shortcuts > a,
+  .path-card, .path-card-head, .path-module, .path-module > div,
+  .lesson-page, .lesson-layout, .lesson-content, .lesson-outline,
+  .course-module-page, .module-reading, .module-project, .module-check,
+  .tool-page, .tool-panel, .tool-grid, .professor-panel,
+  .catalog-page, .catalog-grid, .catalog-card, .university-catalog,
+  .university-school-card, .school-courses, .school-course,
+  .featured-course, .course-visual, .course-details,
+  .systems-grid, .system-card, .system-card-top, .system-outcome,
+  .auth-page, .auth-card, .operations-page, .operations-section,
+  .community-page, .review-card, .review-card-head,
+  .rubric-form, .audit-row, .site-footer, .footer-bottom,
+  .public-header, .public-navigation, .brand, .brand-wordmark,
+  .lab-top, .passport-head, .evidence-list article,
+  .form-row, .scenario-box, .choice-stack, .topic-grid) {
+  min-inline-size: 0;
+}
+:where(main, .workspace, .workspace > main, .dashboard, .lesson-page,
+  .course-module-page, .tool-page, .catalog-page, .operations-page,
+  .community-page, .auth-page, .hero, .featured-course,
+  .tool-panel, .module-reading, .module-project, .module-check,
+  .path-card, .review-card, .system-card, .site-footer) {
+  max-inline-size: 100%;
+}
+/* Preserve full words when possible but break very long identifiers on
+   small screens rather than rendering them outside an academic card. */
+:where(.hero-copy, .section-heading, .system-card, .system-outcome,
+  .course-details, .catalog-card, .university-school-card,
+  .school-course, .module-hero, .module-outcome, .module-reading,
+  .module-project, .module-check, .review-card, .audit-row,
+  .tool-panel, .path-card, .path-module, .lesson-content,
+  .lesson-outline, .auth-card, .site-footer, .footer-intro,
+  .footer-bottom, .study-shortcuts, .preview-banner) {
+  overflow-wrap: anywhere;
+}
+:where(.button, button, .text-link, .header-platforms, .header-admissions,
+  .tool-actions > *, .study-shortcuts > a, .module-project > .text-link) {
+  max-inline-size: 100%;
+}
+:where(.actions, .tool-actions, .course-meta, .tabs,
+  .review-card-head, .lab-top, .passport-head, .progress-label,
+  .workspace-footer, .footer-bottom, .module-outcome,
+  .path-card-head, .system-card-top, .section-heading) {
+  min-width: 0;
+}
+:where(.tool-panel, .module-project, .module-check, .auth-card,
+  .review-card, .professor-panel) :where(fieldset, label, input,
+  textarea, select) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+:where(textarea, input, select) { max-inline-size: 100%; }
+:where(.tool-actions, .course-meta, .lesson-meta, .lab-top,
+  .passport-head, .review-card-head, .progress-label) {
+  flex-wrap: wrap;
+}
+:where(.tool-actions, .hero .actions) :where(button, a) {
+  white-space: normal;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+:where(.tag, .system-status, .system-number, .workspace-status,
+  .module-score, .catalog-progression span) {
+  max-inline-size: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+:where(.tool-panel, .lesson-content, .module-reading, .module-project,
+  .module-check, .review-card) :where(pre) {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  white-space: pre;
+}
+:where(.tool-panel, .module-reading, .module-project, .module-check,
+  .lesson-content) :where(code) { font-family: "Cascadia Code", Consolas, ui-monospace, monospace; }
+:where(.module-project .project-editor,
+  .tool-panel textarea[aria-label="Python editor"]) {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  tab-size: 4;
+}
+.code-output {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-x: auto;
+}
+:where(.lesson-content, .module-reading, .module-project, .module-check) :where(img, video, canvas, svg) {
+  max-inline-size: 100%;
+}
+:where(.technology-table-wrap, .tableWrap) {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Complex diagram adapts its sequence rather than crushing three columns. */
+.ipo > div { min-inline-size: 0; }
+.ipo strong, .ipo p { overflow-wrap: anywhere; }
+:where(.study-shortcuts, .stats, .systems-grid, .catalog-grid,
+  .tool-grid, .university-catalog, .school-courses) > * {
+  min-inline-size: 0;
+}
+.site-footer .footer-bottom { flex-wrap: wrap; gap: 12px 18px; }
+.site-footer .footer-bottom :where(a, small, span) { max-inline-size: 100%; }
+
+/* At tablet widths, let side panels use the content width rather than
+   preserving an overly narrow academic note column. */
+@media (min-width: 641px) and (max-width: 1050px) {
+  .dashboard-columns { grid-template-columns: minmax(0, 1fr); }
+  .right-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .section-heading { align-items: start; flex-wrap: wrap; }
+  .course-start-panel { min-width: 0; }
+  .study-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .study-shortcuts > a:last-child { grid-column: 1 / -1; }
+  .auth-page { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
+/* Phones: single-column lesson diagrams, soft wrapping in previews,
+   and cards that retain their complete controls and labels. */
+@media (max-width: 640px) {
+  .workspace-header { gap: 8px; flex-wrap: wrap; height: auto; }
+  .workspace-header > span:first-child { min-inline-size: 0; flex: 1 1 auto; }
+  .workspace-status { flex: 0 1 auto; }
+  .preview-banner { flex-wrap: wrap; gap: 5px 14px; }
+  .preview-banner > a { white-space: normal; }
+  .page-heading, .section-heading, .course-roadmap-head {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .welcome-panel { align-items: flex-start; }
+  .welcome-panel > div:first-child { min-inline-size: 0; max-inline-size: 100%; }
+  .study-shortcuts { grid-template-columns: minmax(0, 1fr); }
+  .study-shortcuts > a:last-child { grid-column: auto; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats article { min-inline-size: 0; }
+  .stats strong { font-size: clamp(22px, 7vw, 31px); }
+  .right-rail, .dashboard-columns { grid-template-columns: minmax(0, 1fr); }
+  .path-card-head { flex-wrap: wrap; }
+  .path-module > div { min-inline-size: 0; flex: 1 1 auto; }
+  .path-module .round-link { flex-shrink: 0; }
+  .lesson-layout { grid-template-columns: minmax(0, 1fr); }
+  .lesson-content { width: 100%; }
+  .ipo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    gap: 8px;
+    padding: 16px;
+  }
+  .ipo > div { width: 100%; }
+  .ipo > svg { transform: rotate(90deg); justify-self: center; }
+  .topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tool-actions > :where(button, a) { min-height: 44px; flex: 1 1 auto; }
+  .lab-top { display: flex; flex-direction: column; align-items: stretch; }
+  .system-status { align-self: flex-start; }
+  .course-start-panel, .catalog-progression, .review-card { min-inline-size: 0; }
+  .module-check fieldset { padding: 12px; }
+  .quiz-option { align-items: flex-start; overflow-wrap: anywhere; }
+  .module-project .project-editor { min-height: 230px; }
+  .auth-page > div, .auth-card { min-inline-size: 0; }
+  .site-footer .footer-bottom { justify-content: flex-start; }
+}
+/* Extra-compact phones including accessibility text enlargement. */
+@media (max-width: 370px) {
+  .public-header .brand-wordmark { min-inline-size: 0; }
+  .hero h1 { font-size: clamp(31px, 10vw, 38px); }
+  .hero-copy { padding-inline: 18px; }
+  .lesson-content h1, .module-hero h1 { font-size: clamp(29px, 9vw, 36px); }
+  .stats { grid-template-columns: minmax(0, 1fr); }
+  .catalog-card, .system-card { padding-inline: 16px; }
+  .path-module { gap: 8px; }
+}
