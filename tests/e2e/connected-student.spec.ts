@@ -37,9 +37,9 @@ test("connected student can enroll, run Python, pass CS101 and resume saved prog
   await expect(page.locator(".result[role='status']")).toContainText("100%");
 
   await page.goto("/dashboard");
-  await expect(page.getByText("1 / 10 modules mastered")).toBeVisible();
+  await expect(page.locator(".path-module").first()).toContainText("100%");
   await page.reload();
-  await expect(page.getByText("1 / 10 modules mastered")).toBeVisible();
+  await expect(page.locator(".path-module").first()).toContainText("100%");
   await page.goto("/learn/cs101/programming-fundamentals");
   await expect(page.getByRole("heading", { level: 1 }))
     .toContainText("Programming fundamentals");
@@ -50,9 +50,9 @@ test("connected student can enroll, run Python, pass CS101 and resume saved prog
   await page.getByRole("button", { name: "Submit knowledge check" }).click();
   await expect(page.locator(".module-check .result[role='status']")).toContainText("100%");
   await page.goto("/dashboard");
-  await expect(page.getByText("2 / 10 modules mastered")).toBeVisible();
+  await expect(page.locator(".path-module").nth(1)).toContainText("100%");
   await page.reload();
-  await expect(page.getByText("2 / 10 modules mastered")).toBeVisible();
+  await expect(page.locator(".path-module").nth(1)).toContainText("100%");
 });
 
 
