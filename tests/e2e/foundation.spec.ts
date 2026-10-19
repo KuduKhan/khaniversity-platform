@@ -361,6 +361,18 @@ test("five blueprint platforms and admissions have working public entry points",
   await expect(page).toHaveURL(/\/preview\/dashboard$/);
 });
 
+test("CodeLab draft resumes in the same preview browser after reload", async ({ page }) => {
+  await page.goto("/preview/codelab");
+  await expect(page.getByText("Draft is kept in this browser only", { exact: false })).toBeVisible();
+  const code = "def total_minutes(durations):\n    return sum(durations) + 1\n";
+  await page.getByRole("textbox", { name: "Python editor" }).fill(code);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("khaniversity:codelab:preview:v1"))).toBe(code);
+  await page.reload();
+  await expect(page.getByRole("textbox", { name: "Python editor" })).toHaveValue(code);
+  await page.getByRole("button", { name: "Reset local draft" }).click();
+  await expect(page.getByRole("textbox", { name: "Python editor" })).not.toHaveValue(code);
+});
+
 test("auth endpoint rejects cross-origin requests", async ({ request }) => {
   const response = await request.post("/api/auth", {
     headers: { origin: "https://example.invalid" },

@@ -6,6 +6,7 @@ import {
   gradeDiagnostic,
 } from "@/modules/academics/diagnostic";
 import { savePreview, updatePreview, usePreviewRecord } from "./preview-store";
+import { codelabDraftKey, starterPython, safeDraft } from "@/modules/platforms/code-drafts";
 
 export function AdaptivePath({ preview = true }: { preview?: boolean }) {
   const { state } = usePreviewRecord();
@@ -123,11 +124,24 @@ type WorkerReply = {
   stage?: string;
   passed?: boolean;
 };
-export function CodeLab({ preview = true }: { preview?: boolean }) {
+export function CodeLab({ preview = true, accountId }: { preview?: boolean; accountId?: string }) {
   const { state } = usePreviewRecord();
-  const [code, setCode] = useState(
-    "def total_minutes(durations):\n    # Return the total number of minutes\n    return sum(durations)\n",
-  );
+  const [code, setCode] = useState(starterPython);
+  const [draftReady, setDraftReady] = useState(false);
+  const draftKey = codelabDraftKey(preview, accountId);
+  useEffect(() => {
+    try {
+      const saved = safeDraft(localStorage.getItem(draftKey));
+      if (saved !== null) setCode(saved);
+    } catch {
+      // Private browsing or disabled storage still allows in-memory practice.
+    }
+    setDraftReady(true);
+  }, [draftKey]);
+  useEffect(() => {
+    if (!draftReady) return;
+    try { localStorage.setItem(draftKey, code); } catch { /* Local storage is optional. */ }
+  }, [code, draftKey, draftReady]);
   const [status, setStatus] = useState("Starting Python…");
   const [output, setOutput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -193,6 +207,11 @@ export function CodeLab({ preview = true }: { preview?: boolean }) {
       boot();
     }, 8000);
   }
+  function resetDraft() {
+    setCode(starterPython);
+    setOutput("");
+    try { localStorage.removeItem(draftKey); } catch { /* Storage is optional. */ }
+  }
   function exportPython() {
     const file = new Blob([code + "\n"], { type: "text/x-python;charset=utf-8" });
     const url = URL.createObjectURL(file);
@@ -207,7 +226,7 @@ export function CodeLab({ preview = true }: { preview?: boolean }) {
       <p className="eyebrow">CS101 · HANDS-ON PRACTICE</p>
       <h1>Python CodeLab</h1>
       <p className="tool-lede">
-        Write and run Python in a separate browser worker. Practice results are formative, not verified grades. Your code is not sent to the university database or AI tutor; export a copy before leaving.
+        Write and run Python in a separate browser worker. Your draft is kept on this device for this workspace, not in the university database. Practice results are formative, not verified grades. Export a copy if you need to keep it beyond this browser.
       </p>
       <section className="tool-panel">
         <div className="lab-top">
@@ -224,9 +243,11 @@ export function CodeLab({ preview = true }: { preview?: boolean }) {
         <textarea
           aria-label="Python editor"
           spellCheck={false}
+          maxLength={6000}
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
+        <p className="fine-print" role="status">{draftReady ? "Draft is kept in this browser only · not submitted for grading" : "Loading your private browser draft…"}</p>
         <div className="tool-actions">
           <button
             className="button outline"
@@ -236,6 +257,7 @@ export function CodeLab({ preview = true }: { preview?: boolean }) {
             Run code
           </button>
           <button className="button outline" type="button" onClick={exportPython}>Export .py draft</button>
+          <button className="text-button" type="button" onClick={resetDraft}>Reset local draft</button>
           <button
             className="button gold"
             disabled={busy || !status.includes("ready")}
