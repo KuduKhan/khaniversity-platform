@@ -8,6 +8,7 @@ import {
   Code2,
   FlaskConical,
   Award,
+  ScrollText,
   Users,
   LogOut,
 } from "lucide-react";
@@ -74,6 +75,14 @@ export function StudentShell({
           >
             <Award size={18} /> Skills Passport
           </Link>
+          {!preview && (
+            <Link
+              aria-current={active === "transcript" ? "page" : undefined}
+              href="/transcript"
+            >
+              <ScrollText size={18} /> Academic record
+            </Link>
+          )}
           <Link className="catalog-nav-link" href="/catalog">
             <GraduationCap size={18} /> Academic catalog
           </Link>
@@ -121,6 +130,7 @@ export function StudentShell({
                 codelab: "Python CodeLab",
                 labs: "Technology Labs",
                 passport: "Skills Passport",
+                transcript: "Academic Record",
                 community: "Peer Learning",
                 credentials: "Credentials",
                 admin: "Academic Operations",
