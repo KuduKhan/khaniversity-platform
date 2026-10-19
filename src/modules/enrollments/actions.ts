@@ -2,6 +2,7 @@
 import { requireStudent } from "@/lib/database/server";
 import { grade } from "@/modules/assessments/grade";
 import { course } from "@/modules/academics/catalog";
+import { assessmentModuleId } from "@/modules/assessments/module-identifiers";
 import { revalidatePath } from "next/cache";
 export async function enroll() {
   const { db, id } = await requireStudent();
@@ -31,23 +32,13 @@ export async function completeLesson(answers: unknown) {
 }
 
 export async function completeModule(moduleId: string, answers: unknown) {
-  const allowed = new Set([
-    "programming-fundamentals",
-    "variables-data-input-output",
-    "conditions-loops",
-    "functions-scope",
-    "collections",
-    "files-exceptions-debugging",
-    "algorithms-complexity",
-    "testing-git-quality",
-    "personal-study-planner-capstone",
-  ]);
-  if (!allowed.has(moduleId) || !Array.isArray(answers) || answers.length !== 5 ||
+  const databaseModuleId = assessmentModuleId(moduleId);
+  if (!databaseModuleId || !Array.isArray(answers) || answers.length !== 5 ||
       answers.some((answer) => !Number.isInteger(answer) || answer < 0 || answer > 2))
     return { error: "Complete all five questions with a valid answer." };
   const { db } = await requireStudent();
   const { data, error } = await db.rpc("submit_course_check", {
-    p_module_id: moduleId,
+    p_module_id: databaseModuleId,
     p_answers: answers,
   });
   if (error) return { error: "Your assessment could not be saved. Please retry." };

@@ -43,4 +43,14 @@ test("connected student can enroll, run Python, pass CS101 and resume saved prog
   await page.goto("/learn/cs101/programming-fundamentals");
   await expect(page.getByRole("heading", { level: 1 }))
     .toContainText("Programming fundamentals");
+
+  // Regression: live account grading must use cs101-02, not the route slug.
+  for (const [i, answer] of [0, 1, 0, 1, 0].entries())
+    await page.locator(`input[name="module-programming-fundamentals-q-${i}"][value="${answer}"]`).check();
+  await page.getByRole("button", { name: "Submit knowledge check" }).click();
+  await expect(page.locator(".module-check .result[role='status']")).toContainText("100%");
+  await page.goto("/dashboard");
+  await expect(page.getByText("2 / 10 modules mastered")).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("2 / 10 modules mastered")).toBeVisible();
 });

@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
+import { assessmentModuleId } from "../../src/modules/assessments/module-identifiers";
 
 test("SQL migration enforces ownership, enrollment, database grading and immutable best scores", async () => {
   const db = new PGlite();
@@ -66,7 +67,7 @@ test("SQL migration enforces ownership, enrollment, database grading and immutab
       /Invalid answer/,
     );
     const moduleResult = await db.query<{ score: number }>(
-      `select public.submit_course_check('cs101-02','[0,1,0,1,0]') as score`,
+      `select public.submit_course_check('${assessmentModuleId("programming-fundamentals")}','[0,1,0,1,0]') as score`,
     );
     assert.equal(moduleResult.rows[0].score, 100);
     assert.equal((await db.query(`select * from public.assessment_attempts`)).rows.length, 1);
