@@ -6,5 +6,5 @@ export const dynamic = "force-dynamic";
 
 export default async function CodeLabPage() {
   const { email } = await requireStudent();
-  return <StudentShell preview={false} active="codelab" email={email}><CodeLab /></StudentShell>;
+  return <StudentShell preview={false} active="codelab" email={email}><CodeLab preview={false} /></StudentShell>;
 }

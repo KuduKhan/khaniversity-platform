@@ -7,13 +7,15 @@ import {
 } from "@/modules/academics/diagnostic";
 import { savePreview, updatePreview, usePreviewRecord } from "./preview-store";
 
-export function AdaptivePath() {
+export function AdaptivePath({ preview = true }: { preview?: boolean }) {
   const { state } = usePreviewRecord();
+  const [accountResult, setAccountResult] = useState<ReturnType<typeof gradeDiagnostic> | undefined>();
   const [answers, setAnswers] = useState<number[]>([]);
-  const result = state.diagnostic;
+  const result = preview ? state.diagnostic : accountResult;
   function submit() {
     const diagnostic = gradeDiagnostic(answers);
-    savePreview({ ...state, diagnostic });
+    if (preview) savePreview({ ...state, diagnostic });
+    else setAccountResult(diagnostic);
   }
   const weakest =
     result &&
@@ -24,12 +26,12 @@ export function AdaptivePath() {
     weakest === "Testing"
       ? {
           title: `Practice ${weakest.toLowerCase()} in CodeLab.`,
-          href: "/preview/codelab",
+          href: preview ? "/preview/codelab" : "/codelab",
           label: "Open Python CodeLab",
         }
       : {
           title: `Strengthen ${weakest?.toLowerCase()} with a worked lesson and a systems scenario.`,
-          href: "/preview/learn/cs101/computational-thinking",
+          href: preview ? "/preview/learn/cs101/computational-thinking" : "/learn/cs101/computational-thinking",
           label: "Open the CS101 lesson",
         };
   return (
@@ -38,7 +40,7 @@ export function AdaptivePath() {
       <h1>Find your next best step.</h1>
       <p className="tool-lede">
         A short, low-stakes check helps you choose where to spend your effort.
-        It is not an admissions test or course grade.
+        It is not an admissions test or course grade. {preview ? "The result stays on this device." : "This diagnostic is session-only and is not saved as an academic result."}
       </p>
       {result ? (
         <section className="tool-panel">
@@ -61,13 +63,13 @@ export function AdaptivePath() {
             <Link className="button gold" href={recommendation.href}>
               {recommendation.label} →
             </Link>
-            <Link className="button outline" href="/preview/codelab">
+            <Link className="button outline" href={preview ? "/preview/codelab" : "/codelab"}>
               Practice Python →
             </Link>
           </div>
           <button
             className="text-button"
-            onClick={() => savePreview({ ...state, diagnostic: undefined })}
+            onClick={() => { if (preview) savePreview({ ...state, diagnostic: undefined }); else setAccountResult(undefined); setAnswers([]); }}
           >
             Retake diagnostic
           </button>
@@ -120,7 +122,7 @@ type WorkerReply = {
   error?: string;
   passed?: boolean;
 };
-export function CodeLab() {
+export function CodeLab({ preview = true }: { preview?: boolean }) {
   const { state } = usePreviewRecord();
   const [code, setCode] = useState(
     "def total_minutes(durations):\n    # Return the total number of minutes\n    return sum(durations)\n",
@@ -144,7 +146,7 @@ export function CodeLab() {
         if (timer.current) clearTimeout(timer.current);
         setBusy(false);
         setOutput(m.text || "No output.");
-        if (m.passed)
+        if (m.passed && preview)
           updatePreview((current) => ({
             ...current,
             codeChallenges: {
@@ -165,7 +167,7 @@ export function CodeLab() {
       }
     };
     w.postMessage({ type: "init" });
-  }, []);
+  }, [preview]);
   useEffect(() => {
     boot();
     return () => {
@@ -189,13 +191,21 @@ export function CodeLab() {
       boot();
     }, 8000);
   }
+  function exportPython() {
+    const file = new Blob([code + "\n"], { type: "text/x-python;charset=utf-8" });
+    const url = URL.createObjectURL(file);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "khaniversity-cs101-total-minutes.py";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
   return (
     <div className="tool-page">
       <p className="eyebrow">CS101 · HANDS-ON PRACTICE</p>
       <h1>Python CodeLab</h1>
       <p className="tool-lede">
-        Write and run Python in a separate browser worker. Your code stays on
-        this device and does not access your files or the network.
+        Write and run Python in a separate browser worker. Practice results are formative, not verified grades. Your code is not sent to the university database or AI tutor; export a copy before leaving.
       </p>
       <section className="tool-panel">
         <div className="lab-top">
@@ -223,6 +233,7 @@ export function CodeLab() {
           >
             Run code
           </button>
+          <button className="button outline" type="button" onClick={exportPython}>Export .py draft</button>
           <button
             className="button gold"
             disabled={busy || !status.includes("ready")}
@@ -235,7 +246,7 @@ export function CodeLab() {
           {output ||
             "Output will appear here. Challenge checks cover typical, empty, and single-item inputs."}
         </pre>
-        {state.codeChallenges?.["total-minutes"]?.passed && (
+        {preview && state.codeChallenges?.["total-minutes"]?.passed && (
           <p className="success-note">
             ✓ Challenge passed · saved to your local Skills Passport
           </p>

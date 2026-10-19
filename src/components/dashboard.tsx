@@ -11,6 +11,8 @@ import {
   Braces,
 } from "lucide-react";
 import { courseModules } from "@/modules/academics/curriculum";
+import { buildLearningPlan } from "@/modules/academics/learning-plan";
+import styles from "./studentos.module.css";
 import { enroll } from "@/modules/enrollments/actions";
 import {
   emptyState,
@@ -29,6 +31,7 @@ export function Dashboard({
   const local = usePreviewRecord();
   const state = preview ? local.state : remote;
   const ready = !preview || local.ready;
+  const plan = buildLearningPlan(state);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const base = preview ? "/preview" : "";
@@ -114,6 +117,26 @@ export function Dashboard({
           <span>CS / 101</span>
         </div>
       </section>
+      {state.enrolled && (
+        <section className={styles.plan} aria-label="Your next steps">
+          <div className={styles.planIntro}>
+            <span className="eyebrow">STUDENTOS · YOUR NEXT BEST STEP</span>
+            <h2>{plan.hasFinishedChecks ? "Prepare your capstone review" : plan.next.score !== null && plan.next.score < 80 ? "Build confidence with a focused retry" : "Continue where you left off"}</h2>
+            <p>{plan.next.title}</p>
+            <div className={styles.planProgress} role="progressbar" aria-label="CS101 module mastery" aria-valuemin={0} aria-valuemax={plan.total} aria-valuenow={plan.mastered}>
+              <span style={{ width: `${plan.percentage}%` }} />
+            </div>
+            <small>{plan.mastered} of {plan.total} module checks mastered · {plan.percentage}%</small>
+          </div>
+          <div className={styles.planActions}>
+            <Link className="button gold" href={moduleHref(plan.next.id)}>Open next lesson <ArrowRight size={16}/></Link>
+            <Link className="button outline" href={`${base}/codelab`}>Practice in Python CodeLab</Link>
+            <Link className="text-link" href={`${base}/path`}>Explore your adaptive learning path →</Link>
+          </div>
+          {plan.review.length > 0 && <div className={styles.review}><strong>Revision queue</strong>{plan.review.slice(0,3).map(item => <Link key={item.id} href={moduleHref(item.id)}>{item.title} · {item.score}% <ArrowRight size={14}/></Link>)}</div>}
+          <p className={styles.disclaimer}>Module check mastery is formative. A university-issued course award also requires a reviewed capstone and eligibility checks.</p>
+        </section>
+      )}
       <div className="stats">
         <article>
           <BookOpen size={20} />

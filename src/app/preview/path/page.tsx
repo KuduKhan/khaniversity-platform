@@ -3,7 +3,7 @@ import { AdaptivePath } from "@/components/learning-tools";
 export default function PathPage() {
   return (
     <StudentShell preview active="diagnostic">
-      <AdaptivePath />
+      <AdaptivePath preview />
     </StudentShell>
   );
 }
