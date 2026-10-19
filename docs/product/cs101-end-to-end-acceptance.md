@@ -24,7 +24,7 @@ accredited degree programs.
 ## Database migration and verification
 
 After the foundation, virtual-university and operational-blueprint migrations,
-run `supabase/migrations/20261019224500_capstone_submission_review.sql`.
+run `supabase/migrations/20261019200411_capstone_submission_review.sql`.
 It adds `capstone_submissions` and `learning_diagnostics`; updates
 `capstone_reviews` to bind reviews to submitted snapshots; and replaces
 the CS101 credential rule with verification of reviewed work.

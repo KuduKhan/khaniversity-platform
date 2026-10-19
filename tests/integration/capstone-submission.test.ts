@@ -27,7 +27,7 @@ test("capstone snapshots are immutable, private, reviewer-graded and audited",as
       "supabase/migrations/20261018131843_foundation.sql",
       "supabase/migrations/20261019090000_virtual_university.sql",
       "supabase/migrations/20261019192741_operational_blueprint.sql",
-      "supabase/migrations/20261019224500_capstone_submission_review.sql",
+      "supabase/migrations/20261019200411_capstone_submission_review.sql",
     ]) await db.exec(await readFile(file,"utf8"));
     await db.exec(`insert into public.course_staff(user_id,course_id,role) values
       ('${tutor}','cs101','instructor'),('${reviewer}','cs101','reviewer');`);
