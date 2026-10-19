@@ -274,7 +274,7 @@ export function CodeLab({ preview = true, accountId, savedSubmissions = [] }: { 
           value={code}
           onChange={(e) => editCode(e.target.value)}
         />
-        <p className="fine-print" role="status">Autosaved browser draft · {preview ? "preview-only evidence" : "use Submit solution to save an account-backed submission"}</p>
+        <p className="fine-print" role="status">{preview ? "Draft is kept in this browser only · preview evidence" : "Autosaved browser draft · use Submit solution to save an account-backed submission"}</p>
         <div className="tool-actions">
           <button
             className="button outline"
