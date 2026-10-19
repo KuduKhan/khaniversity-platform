@@ -49,6 +49,13 @@ test("connected student can enroll, run Python, pass CS101 and resume saved prog
     await page.locator(`input[name="module-programming-fundamentals-q-${i}"][value="${answer}"]`).check();
   await page.getByRole("button", { name: "Submit knowledge check" }).click();
   await expect(page.locator(".module-check .result[role='status']")).toContainText("100%");
+  await page.goto("/path");
+  for (const index of [0, 1, 2, 3, 4, 5])
+    await page.locator(`input[name="q-${index}"]`).first().check();
+  await page.getByRole("button", { name: "Build my path" }).click();
+  await expect(page.getByText("DIAGNOSTIC COMPLETE", { exact: false })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("DIAGNOSTIC COMPLETE", { exact: false })).toBeVisible();
   await page.goto("/dashboard");
   await expect(page.locator(".path-module").nth(1)).toContainText("100%");
   await page.reload();
@@ -73,6 +80,18 @@ test("two real browser accounts cannot see each other's CS101 project draft", as
   await page.getByRole("textbox", { name: "Project name" }).fill(privateName);
   await page.getByRole("button", { name: "Save project draft" }).click();
   await expect(page.getByRole("status")).toContainText("Private project draft saved");
+  await page.getByRole("textbox", { name: "Python draft" }).fill(
+    "def build_study_plan(tasks):\n    return sorted(tasks, key=lambda task: task.get('priority', 0))\n"
+  );
+  await page.getByRole("textbox", { name: "Explain one design decision" }).fill(
+    "I use a list of task dictionaries so each task keeps a duration and a priority; I test the empty case and validate malformed items before processing."
+  );
+  await page.getByRole("button", { name: "Submit capstone for assessment" }).click();
+  await expect(page.getByText("Capstone formally submitted", { exact: false })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Awaiting academic review" })).toBeDisabled();
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Awaiting academic review" })).toBeDisabled();
+
 
   const contextB = await browser.newContext();
   try {
@@ -87,6 +106,8 @@ test("two real browser accounts cannot see each other's CS101 project draft", as
     await other.goto("/learn/cs101/personal-study-planner-capstone");
     await expect(other.getByRole("heading", { level: 1 })).toContainText("Capstone");
     await expect(other.getByRole("textbox", { name: "Project name" })).not.toHaveValue(privateName);
+    await expect(other.getByText("Most recent submission:", { exact: false })).toHaveCount(0);
+
   } finally {
     await contextB.close();
   }

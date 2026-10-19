@@ -348,13 +348,12 @@ test("learning data disclosure is reachable without an account", async ({ page }
   await expect(page.getByRole("heading", { name: "Before the public learner pilot" })).toBeVisible();
 });
 
-test("five blueprint platforms and admissions have working public entry points", async ({ page }) => {
+test("working campus journeys route directly into real learning tools", async ({ page }) => {
   await page.goto("/platforms");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Your academy.");
-  for (const name of ["Public Site", "Student Portal", "Learning Studio", "Python CodeLab", "Academic Administration"])
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Learn it. Build it.");
+  for (const name of ["Choose your course", "Enroll with your account", "Study the lessons", "Write and submit Python", "Review your evidence", "Manage academic operations"])
     await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Move from a lesson to demonstrable skill" })).toBeVisible();
-  await page.getByRole("link", { name: "Explore admissions" }).click();
+  await page.getByRole("link", { name: "How enrollment works" }).click();
   await expect(page).toHaveURL(/\/admissions$/);
   await expect(page.getByRole("heading", { name: "How to begin" })).toBeVisible();
   await page.getByRole("link", { name: "Try the Student Portal" }).click();

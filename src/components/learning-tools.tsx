@@ -8,16 +8,31 @@ import {
 import { savePreview, updatePreview, usePreviewRecord } from "./preview-store";
 import { codelabDraftKey, starterPython, safeDraft } from "@/modules/platforms/code-drafts";
 import { submitCodeSolution, type SavedCodeSubmission } from "@/modules/codelab/actions";
+import { saveLearningDiagnostic } from "@/modules/learning/actions";
+import type { DiagnosticResult } from "@/modules/academics/diagnostic";
 
-export function AdaptivePath({ preview = true }: { preview?: boolean }) {
+export function AdaptivePath({ preview = true, initialResult }: { preview?: boolean; initialResult?: DiagnosticResult }) {
   const { state } = usePreviewRecord();
-  const [accountResult, setAccountResult] = useState<ReturnType<typeof gradeDiagnostic> | undefined>();
+  const [accountResult, setAccountResult] = useState<ReturnType<typeof gradeDiagnostic> | undefined>(initialResult);
+  const [savingDiagnostic,setSavingDiagnostic] = useState(false);
+  const [diagnosticError,setDiagnosticError] = useState("");
   const [answers, setAnswers] = useState<number[]>([]);
   const result = preview ? state.diagnostic : accountResult;
-  function submit() {
-    const diagnostic = gradeDiagnostic(answers);
-    if (preview) savePreview({ ...state, diagnostic });
-    else setAccountResult(diagnostic);
+  async function submit() {
+    setSavingDiagnostic(true);
+    setDiagnosticError("");
+    try {
+      if (preview) {
+        const diagnostic=gradeDiagnostic(answers);
+        savePreview({ ...state, diagnostic });
+      } else {
+        const saved=await saveLearningDiagnostic(answers);
+        if ("error" in saved && saved.error) setDiagnosticError(saved.error);
+        else if ("result" in saved && saved.result) setAccountResult(saved.result);
+      }
+    } catch {
+      setDiagnosticError("The diagnostic could not be saved. Check the answers and try again.");
+    } finally {setSavingDiagnostic(false);}
   }
   const weakest =
     result &&
@@ -42,7 +57,7 @@ export function AdaptivePath({ preview = true }: { preview?: boolean }) {
       <h1>Find your next best step.</h1>
       <p className="tool-lede">
         A short, low-stakes check helps you choose where to spend your effort.
-        It is not an admissions test or course grade. {preview ? "The result stays on this device." : "This diagnostic is session-only and is not saved as an academic result."}
+        It is not an admissions test or course grade. {preview ? "The result stays on this device." : "This formative result is saved privately to your account; it is not an academic grade."}
       </p>
       {result ? (
         <section className="tool-panel">
@@ -107,11 +122,12 @@ export function AdaptivePath({ preview = true }: { preview?: boolean }) {
           ))}
           <button
             className="button gold"
-            disabled={answers.length !== 6}
-            onClick={submit}
+            disabled={savingDiagnostic || answers.length !== 6}
+            onClick={() => void submit()}
           >
-            Build my path →
+            {savingDiagnostic ? "Saving your path…" : "Build my path →"}
           </button>
+          {diagnosticError && <p role="alert" className="save-error">{diagnosticError}</p>}
         </section>
       )}
     </div>

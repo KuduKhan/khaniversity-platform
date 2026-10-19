@@ -69,3 +69,24 @@ export async function saveCapstoneDraft(input: unknown) {
   revalidatePath("/dashboard");
   return { ok: true };
 }
+
+/** Publish an immutable copy of a saved capstone for independent review.
+ * The RPC owns the enrolled learner identity and copies only that learner's draft. */
+export async function submitCapstoneForReview(input: unknown) {
+  if (!input || typeof input !== "object") return { error: "Save a valid project before submitting." };
+  const draft=input as Record<string,unknown>;
+  if (typeof draft.title!=="string" || draft.title.trim().length<5 || draft.title.length>100 ||
+      typeof draft.code!=="string" || draft.code.trim().length<50 || draft.code.length>20000 ||
+      typeof draft.reflection!=="string" || draft.reflection.trim().length<80 || draft.reflection.length>3000)
+    return { error: "Provide a project name, at least 50 characters of code and an 80-character design explanation." };
+  const saved=await saveCapstoneDraft(draft);
+  if (saved.error) return saved;
+  const { db }=await requireStudent();
+  const { data,error }=await db.rpc("submit_cs101_capstone");
+  if (error) return { error: "Submission could not be accepted. Check if a previous capstone is awaiting review, then retry." };
+  revalidatePath("/admin");
+  revalidatePath("/dashboard");
+  revalidatePath("/passport");
+  revalidatePath("/learn/cs101/personal-study-planner-capstone");
+  return { submissionId: String(data) };
+}

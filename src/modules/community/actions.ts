@@ -115,35 +115,32 @@ export async function reviewPeerProject(input: unknown) {
 export async function assessCapstone(input: unknown) {
   if (!input || typeof input !== "object") return { error: "Review details are invalid." };
   const value = input as Record<string, unknown>;
-  if (typeof value.learnerId !== "string" || typeof value.feedback !== "string" || value.feedback.trim().length < 20 || value.feedback.length > 3000)
-    return { error: "Provide the learner and specific feedback." };
+  if (typeof value.submissionId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(value.submissionId) ||
+      typeof value.feedback !== "string" ||
+      value.feedback.trim().length < 20 || value.feedback.length > 3000 ||
+      typeof value.codeTestsPassed !== "boolean")
+    return { error: "Choose a submission, verify the tests and provide detailed feedback." };
   const criteria = ["features", "inputHandling", "dataModel", "tests", "readability", "explanation"] as const;
   const rubric: Record<string, number> = {};
   for (const criterion of criteria) {
     const score = value[criterion];
     if (!Number.isInteger(score) || Number(score) < 0 || Number(score) > 100)
-      return { error: "Score each rubric criterion from 0 to 100." };
+      return { error: "Score every rubric criterion from 0 to 100." };
     rubric[criterion] = Number(score);
   }
-  const score = Math.round(
-    rubric.features * 0.25 + rubric.inputHandling * 0.15 + rubric.dataModel * 0.15 +
-    rubric.tests * 0.2 + rubric.readability * 0.15 + rubric.explanation * 0.1,
-  );
-  const { db, id } = await requireCourseStaff("cs101", ["instructor", "reviewer", "administrator"]);
-  const { error } = await db.from("capstone_reviews").upsert({
-    user_id: value.learnerId,
-    course_id: "cs101",
-    reviewer_id: id,
-    score,
-    code_tests_passed: value.codeTestsPassed === true,
-    rubric,
-    feedback: value.feedback.trim(),
-    reviewed_at: new Date().toISOString(),
-  }, { onConflict: "user_id,course_id" });
-  if (error) return { error: "The review could not be saved. Confirm the learner is enrolled." };
+  const { db } = await requireCourseStaff("cs101", ["instructor", "reviewer", "administrator"]);
+  const { data, error } = await db.rpc("review_cs101_capstone", {
+    p_submission_id: value.submissionId,
+    p_rubric: rubric,
+    p_code_tests_passed: value.codeTestsPassed,
+    p_feedback: value.feedback.trim(),
+  });
+  if (error) return { error: "Review was not saved. Confirm your assignment and that the submission is still awaiting review." };
   revalidatePath("/admin");
   revalidatePath("/dashboard");
-  return { score, passed: score >= 80 && value.codeTestsPassed === true };
+  revalidatePath("/passport");
+  return { score: Number(data), passed: Number(data) >= 80 && value.codeTestsPassed === true };
 }
 
 export async function issueCredential(input: unknown) {
