@@ -13,7 +13,12 @@ export function PublicNavigation() {
   function close() { setOpenedFrom(null); }
 
   return (
-    <div className="public-navigation">
+    <div className="public-navigation" onKeyDown={(event) => {
+      if (event.key === "Escape" && open) {
+        close();
+        toggle.current?.focus();
+      }
+    }}>
       <button
         ref={toggle}
         type="button"
@@ -30,12 +35,6 @@ export function PublicNavigation() {
         id="public-navigation-links"
         className={open ? "site-menu-open" : ""}
         aria-label="Main navigation"
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            close();
-            toggle.current?.focus();
-          }
-        }}
         onClick={(event) => {
           if ((event.target as HTMLElement).closest("a")) close();
         }}
