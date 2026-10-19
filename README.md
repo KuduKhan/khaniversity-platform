@@ -1,5 +1,7 @@
 # KHANIVERSITY · Virtual University Release
 
+Independent online learning academy. Knowledge into practice, one step at a time.
+
 KHANIVERSITY is a working, responsive learning platform organized around the original brainstorm’s six connected systems and the master blueprint’s shared university structure. It includes six school catalogs, 18 course entries, a complete ten-module CS101 pathway, capstone workflow, peer cohorts, academic review tools, and a progressive web app shell.
 
 ## Run locally
@@ -48,4 +50,4 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Database policy tests use an isolated PGlite database. Browser checks cover the learning loop and responsive layouts. They do not establish that email delivery, a live Supabase project, OpenAI responses, public hosting or real cloud labs are configured. No deployment or remote Git push has been performed.
+Database policy tests use an isolated PGlite database. Browser checks cover the learning loop and responsive layouts. They do not establish that email delivery, a live Supabase project, OpenAI responses, public hosting or real cloud labs are configured.
