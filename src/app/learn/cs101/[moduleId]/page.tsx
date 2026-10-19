@@ -42,6 +42,12 @@ export default async function StudentCourseModule({
         .eq("course_id", "cs101")
         .maybeSingle()
     : { data: null };
+  const submissionResult = courseModule.project ? await db.from("capstone_submissions")
+    .select("id,status,submitted_at").eq("user_id",id).eq("course_id","cs101")
+    .order("submitted_at",{ ascending:false }).limit(1).maybeSingle() : { data: null, error: null };
+  const reviewResult = courseModule.project ? await db.from("capstone_reviews")
+    .select("submission_id,feedback").eq("user_id",id).eq("course_id","cs101").maybeSingle() : { data: null, error: null };
+  if (submissionResult.error || reviewResult.error) throw new Error("Could not load your capstone submission status.");
   return (
     <StudentShell preview={false} active="lesson" email={email}>
       <CourseModule
@@ -49,6 +55,10 @@ export default async function StudentCourseModule({
         preview={false}
         approvedMaterial={approvedMaterial}
         initialScore={data?.score ?? null}
+        initialSubmission={submissionResult.data ? {
+          ...submissionResult.data,
+          feedback: reviewResult.data?.submission_id === submissionResult.data.id ? reviewResult.data.feedback : undefined,
+        } : null}
         initialDraft={draftResult.data ? {
           title: draftResult.data.title,
           code: draftResult.data.source_code,

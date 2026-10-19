@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Save } from "lucide-react";
-import { completeModule, saveCapstoneDraft } from "@/modules/enrollments/actions";
+import { completeModule, saveCapstoneDraft, submitCapstoneForReview } from "@/modules/enrollments/actions";
 import type { LearnerModule } from "@/modules/academics/transport";
 import { savePreview, usePreviewRecord } from "./preview-store";
 import { Professor } from "./professor";
@@ -13,12 +13,14 @@ export function CourseModule({
   approvedMaterial = null,
   initialScore = null,
   initialDraft,
+  initialSubmission = null,
 }: {
   module: LearnerModule;
   preview: boolean;
   approvedMaterial?: { title: string; body: string; id: number } | null;
   initialScore?: number | null;
   initialDraft?: { title: string; code: string; reflection: string } | null;
+  initialSubmission?: { id: string; status: string; submitted_at: string; feedback?: string } | null;
 }) {
   const { state } = usePreviewRecord();
   // Never mix untrusted browser-local preview records with authenticated evidence.
@@ -35,6 +37,8 @@ export function CourseModule({
     updatedAt: "",
   };
   const [draftMessage, setDraftMessage] = useState("");
+  const [submission, setSubmission] = useState(initialSubmission);
+  const [sending, setSending] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -81,6 +85,22 @@ export function CourseModule({
     }
   }
 
+  async function submitForReview() {
+    if (preview || sending) return;
+    setSending(true);
+    setDraftMessage("");
+    try {
+      const result=await submitCapstoneForReview(draft);
+      if (result.error) setDraftMessage(result.error);
+      else {
+        setSubmission({ id: result.submissionId!, status: "submitted", submitted_at: new Date().toISOString() });
+        setDraftMessage("Capstone formally submitted. Reviewers will assess this frozen version of your code and design explanation.");
+      }
+    } catch {
+      setDraftMessage("Could not submit the capstone. Please retry.");
+    } finally { setSending(false); }
+  }
+
   const moduleIndex = module.id === "computational-thinking"
     ? 0
     : ["programming-fundamentals", "variables-data-input-output", "conditions-loops", "functions-scope", "collections", "files-exceptions-debugging", "algorithms-complexity", "testing-git-quality", "personal-study-planner-capstone"].indexOf(module.id) + 1;
@@ -124,6 +144,17 @@ export function CourseModule({
           <label>Python draft<textarea className="project-editor" value={draft.code} onChange={(e) => setDraftOverride({ ...draft, code: e.target.value.slice(0, 20000) })} spellCheck={false} /></label>
           <label>Explain one design decision<textarea value={draft.reflection} onChange={(e) => setDraftOverride({ ...draft, reflection: e.target.value.slice(0, 3000) })} maxLength={3000} rows={4} /></label>
           <button className="button outline" type="button" onClick={saveDraft}><Save size={16} /> Save project draft</button>
+          {!preview && <div className="tool-actions" style={{ marginTop: 16 }}>
+            <button className="button gold" type="button" onClick={submitForReview} disabled={sending || submission?.status === "submitted"}>
+              {sending ? "Submitting capstone…" : submission?.status === "submitted" ? "Awaiting academic review" : "Submit capstone for assessment"}
+              <ArrowRight size={16} />
+            </button>
+          </div>}
+          {!preview && submission && <div className="notice" role="status">
+            <strong>Most recent submission:</strong> {submission.status === "reviewed" ? "Accepted after review" : submission.status === "needs-work" ? "Revision requested" : "Awaiting review"} · {new Date(submission.submitted_at).toLocaleDateString()}
+            {submission.feedback && <p><strong>Reviewer feedback:</strong> {submission.feedback}</p>}
+            <p>Your submitted code is preserved as an immutable academic snapshot; edits to this draft do not change it.</p>
+          </div>}
           {draftMessage && <small role="status">{draftMessage}</small>}
           <Link className="text-link" href={`${preview ? "/preview" : ""}/codelab`}>Continue building in Python CodeLab <ArrowRight size={16} /></Link>
         </section>
