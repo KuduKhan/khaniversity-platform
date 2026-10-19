@@ -318,6 +318,17 @@ test("account recovery rejects cross-origin use and recovery pages remain access
   expect(update.status()).toBe(403);
 });
 
+test("CodeLab isolates Python runs, so stale functions cannot pass a fresh check", async ({ page }) => {
+  await page.goto("/preview/codelab");
+  await expect(page.getByText("Python is ready · runs in your browser")).toBeVisible({ timeout: 60_000 });
+  await page.getByRole("button", { name: "Run challenge checks" }).click();
+  await expect(page.getByText("All 3 challenge checks passed.")).toBeVisible({ timeout: 30_000 });
+  await page.getByRole("textbox", { name: "Python editor" }).fill("# no function in this attempt");
+  await page.getByRole("button", { name: "Run challenge checks" }).click();
+  await expect(page.locator(".code-output")).toContainText("NameError", { timeout: 30_000 });
+  await expect(page.getByRole("button", { name: "Run challenge checks" })).toBeEnabled();
+});
+
 test("auth endpoint rejects cross-origin requests", async ({ request }) => {
   const response = await request.post("/api/auth", {
     headers: { origin: "https://example.invalid" },

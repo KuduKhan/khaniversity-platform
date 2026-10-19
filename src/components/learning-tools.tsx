@@ -120,6 +120,7 @@ type WorkerReply = {
   type: string;
   text?: string;
   error?: string;
+  stage?: string;
   passed?: boolean;
 };
 export function CodeLab({ preview = true }: { preview?: boolean }) {
@@ -162,7 +163,8 @@ export function CodeLab({ preview = true }: { preview?: boolean }) {
       if (m.type === "error") {
         if (timer.current) clearTimeout(timer.current);
         setBusy(false);
-        setStatus("Python could not start");
+        // Code errors are useful feedback, not a Python runtime startup failure.
+        setStatus(m.stage === "init" ? "Python could not start" : "Python is ready · runs in your browser");
         setOutput(m.error || "Worker error");
       }
     };
