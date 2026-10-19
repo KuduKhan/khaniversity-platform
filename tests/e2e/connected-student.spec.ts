@@ -1,0 +1,46 @@
+import { test, expect } from "@playwright/test";
+
+// Opt-in smoke test: run only with a DEDICATED Supabase test learner and
+// matching NEXT_PUBLIC_SUPABASE_* environment in the test server.
+// Never put production learner credentials in repository or CI logs.
+const email = process.env.KHANIVERSITY_E2E_EMAIL;
+const password = process.env.KHANIVERSITY_E2E_PASSWORD;
+test.skip(!email || !password, "Dedicated connected learner credentials are not configured.");
+
+test("connected student can enroll, run Python, pass CS101 and resume saved progress", async ({ page }) => {
+  await page.goto("/signin");
+  await page.getByLabel("Email address").fill(email!);
+  await page.getByLabel(/Password/).fill(password!);
+  await page.getByRole("button", { name: /Sign in to your academy/ }).click();
+  await expect(page).toHaveURL(/\/dashboard$/, { timeout: 20_000 });
+
+  const enroll = page.getByRole("button", { name: /Enroll in CS101/ });
+  if (await enroll.count()) {
+    await enroll.click();
+    await expect(page.getByRole("link", { name: /Continue learning/ })).toBeVisible();
+  }
+
+  await page.goto("/learn/cs101/computational-thinking");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Before the code");
+  await page.goto("/codelab");
+  await expect(page.getByText("Python is ready · runs in your browser"))
+    .toBeVisible({ timeout: 60_000 });
+  await page.getByRole("button", { name: "Run challenge checks" }).click();
+  await expect(page.getByText("All 3 challenge checks passed."))
+    .toBeVisible({ timeout: 30_000 });
+
+  await page.goto("/learn/cs101/computational-thinking");
+  for (const [i, answer] of [1, 2, 0, 2, 1].entries()) {
+    await page.locator(`input[name="question-${i}"][value="${answer}"]`).check();
+  }
+  await page.getByRole("button", { name: "Check & save progress" }).click();
+  await expect(page.locator(".result[role='status']")).toContainText("100%");
+
+  await page.goto("/dashboard");
+  await expect(page.getByText("1 / 10 modules mastered")).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("1 / 10 modules mastered")).toBeVisible();
+  await page.goto("/learn/cs101/programming-fundamentals");
+  await expect(page.getByRole("heading", { level: 1 }))
+    .toContainText("Programming fundamentals");
+});
