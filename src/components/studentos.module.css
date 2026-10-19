@@ -12,3 +12,11 @@
 .review a { color:#f4ddae; display:inline-flex; align-items:center; gap:.45rem; width:fit-content; }
 .disclaimer { grid-column:1/-1; font-size:.8rem; color:#d7ded8; margin:0; }
 @media (max-width:680px) { .plan { grid-template-columns:minmax(0,1fr); padding:1.2rem; } .review,.disclaimer { grid-column:1; } }
+
+/* Keep full recommendation and revision labels within StudentOS panels. */
+.plan, .planIntro, .planActions, .review, .disclaimer { min-width:0; max-width:100%; }
+.planIntro :is(h2,p,small), .planActions a, .review a, .disclaimer { overflow-wrap:anywhere; }
+.planActions a { white-space:normal; }
+@media (min-width:681px) and (max-width:1050px) {
+  .plan { grid-template-columns:minmax(0,1fr); }
+}
