@@ -204,3 +204,71 @@ begin
   return code;
 end;
 $$;
+
+
+-- Formative diagnostic: durable per learner, never counted as a graded module.
+create table public.learning_diagnostics(
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  course_id text not null references public.courses(id),
+  score integer not null check(score between 0 and 100),
+  topic_scores jsonb not null check(jsonb_typeof(topic_scores)='object'),
+  created_at timestamptz not null default now()
+);
+create index learning_diagnostics_owner on public.learning_diagnostics(user_id,course_id,created_at desc);
+alter table public.learning_diagnostics enable row level security;
+revoke all on public.learning_diagnostics from public,anon,authenticated;
+grant select on public.learning_diagnostics to authenticated;
+create policy learning_diagnostics_owner_read on public.learning_diagnostics
+  for select to authenticated using(user_id=(select auth.uid()));
+
+create function private.submit_learning_diagnostic(p_answers jsonb)
+returns jsonb language plpgsql security definer set search_path='' as $$
+declare
+  learner uuid:=auth.uid();
+  expected int[]:=array[0,1,1,0,1,0];
+  topics text[]:=array['Algorithms','Systems thinking','Problem solving',
+    'Programming logic','Testing','Python foundations'];
+  hits integer:=0;
+  i integer;
+  mark integer;
+  by_topic jsonb:='{}'::jsonb;
+  score_value integer;
+  created timestamptz;
+begin
+  if learner is null then raise exception 'Authentication required' using errcode='42501'; end if;
+  if not exists(select 1 from public.enrollments
+    where user_id=learner and course_id='cs101') then
+    raise exception 'Enroll in CS101 to save your learning path' using errcode='42501';
+  end if;
+  if jsonb_typeof(p_answers) is distinct from 'array' or jsonb_array_length(p_answers)<>6 then
+    raise exception 'Six diagnostic answers required';
+  end if;
+  if (select count(*) from public.learning_diagnostics
+     where user_id=learner and course_id='cs101'
+       and created_at>now()-interval '1 day')>=8 then
+    raise exception 'Daily diagnostic limit reached';
+  end if;
+  for i in 0..5 loop
+    if jsonb_typeof(p_answers->i) is distinct from 'number'
+       or (p_answers->>i) not in ('0','1','2') then
+      raise exception 'Invalid diagnostic answer';
+    end if;
+    mark:=case when (p_answers->>i)::integer=expected[i+1] then 100 else 0 end;
+    hits:=hits+case when mark=100 then 1 else 0 end;
+    by_topic:=by_topic||jsonb_build_object(topics[i+1],mark);
+  end loop;
+  score_value:=round(hits::numeric/6*100);
+  insert into public.learning_diagnostics(user_id,course_id,score,topic_scores)
+    values(learner,'cs101',score_value,by_topic) returning created_at into created;
+  return jsonb_build_object('completedAt',created,'score',score_value,'byTopic',by_topic);
+end;
+$$;
+revoke all on function private.submit_learning_diagnostic(jsonb) from public,anon;
+grant execute on function private.submit_learning_diagnostic(jsonb) to authenticated;
+create function public.submit_learning_diagnostic(p_answers jsonb)
+returns jsonb language sql security invoker set search_path='' as $$
+  select private.submit_learning_diagnostic(p_answers);
+$$;
+revoke all on function public.submit_learning_diagnostic(jsonb) from public,anon;
+grant execute on function public.submit_learning_diagnostic(jsonb) to authenticated;
