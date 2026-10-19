@@ -6,6 +6,7 @@ import { PGlite } from "@electric-sql/pglite";
 const student = "00000000-0000-0000-0000-000000000001";
 const reviewer = "00000000-0000-0000-0000-000000000002";
 const instructor = "00000000-0000-0000-0000-000000000003";
+const admin = "00000000-0000-0000-0000-000000000004";
 
 test("operational blueprint migration separates account code from reviewed evidence and staff content", async () => {
   const db = new PGlite();
@@ -13,12 +14,16 @@ test("operational blueprint migration separates account code from reviewed evide
     db.exec(`set request.jwt.claim.sub='${id}';`);
   try {
     await db.exec(`create role anon; create role authenticated; create schema auth;
-      create table auth.users(id uuid primary key);
+      create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
       create function auth.uid() returns uuid language sql stable
         as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
       grant usage on schema auth to anon,authenticated;
       grant execute on function auth.uid() to anon,authenticated;
-      insert into auth.users values('${student}'),('${reviewer}'),('${instructor}');`);
+      insert into auth.users values
+      ('${student}','student@example.invalid',now()),
+      ('${reviewer}','reviewer@example.invalid',now()),
+      ('${instructor}','instructor@example.invalid',now()),
+      ('${admin}','admin@example.invalid',now());`);
     for (const file of [
       "supabase/migrations/20261018131843_foundation.sql",
       "supabase/migrations/20261019090000_virtual_university.sql",
@@ -26,7 +31,8 @@ test("operational blueprint migration separates account code from reviewed evide
     ]) await db.exec(await readFile(file,"utf8"));
     await db.exec(`insert into public.course_staff(user_id,course_id,role) values
       ('${instructor}','cs101','instructor'),
-      ('${reviewer}','cs101','reviewer');`);
+      ('${reviewer}','cs101','reviewer'),
+      ('${admin}','cs101','administrator');`);
 
     await db.exec("set role authenticated");
     await setActor(student);
@@ -96,7 +102,20 @@ test("operational blueprint migration separates account code from reviewed evide
       "select status,code_tests_passed from public.code_submissions");
     assert.deepEqual(reviewed.rows,[{status:"reviewed",code_tests_passed:true}]);
     assert.equal((await db.query("select id from public.lesson_revisions")).rows.length,1);
-    await db.exec("set request.jwt.claim.sub='00000000-0000-0000-0000-000000000004'");
+    await setActor(admin);
+    assert.equal((await db.query("select role from public.course_staff")).rows.length,3);
+    await assert.rejects(
+      () => db.query("select public.assign_cs101_staff('admin@example.invalid','administrator')"),
+      /Self-assignment/,
+    );
+    await db.query("select public.assign_cs101_staff('student@example.invalid','instructor')");
+    assert.equal((await db.query("select role from public.course_staff")).rows.length,4);
+    await setActor(instructor);
+    await assert.rejects(
+      () => db.query("select public.assign_cs101_staff('student@example.invalid','administrator')"),
+      /Administrator authorization required/,
+    );
+    await db.exec("set request.jwt.claim.sub='00000000-0000-0000-0000-000000000005'");
     assert.equal((await db.query("select id from public.code_submissions")).rows.length,0);
     await db.exec("set role anon");
     await assert.rejects(
