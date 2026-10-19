@@ -57,7 +57,7 @@ export default async function StudentCourseModule({
         initialScore={data?.score ?? null}
         initialSubmission={submissionResult.data ? {
           ...submissionResult.data,
-          feedback: reviewResult.data?.submission_id === submissionResult.data.id ? reviewResult.data.feedback : undefined,
+          feedback: reviewResult.data && reviewResult.data.submission_id === submissionResult.data.id ? reviewResult.data.feedback : undefined,
         } : null}
         initialDraft={draftResult.data ? {
           title: draftResult.data.title,

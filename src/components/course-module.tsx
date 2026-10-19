@@ -91,9 +91,9 @@ export function CourseModule({
     setDraftMessage("");
     try {
       const result=await submitCapstoneForReview(draft);
-      if (result.error) setDraftMessage(result.error);
+      if ("error" in result && result.error) setDraftMessage(result.error);
       else {
-        setSubmission({ id: result.submissionId!, status: "submitted", submitted_at: new Date().toISOString() });
+        setSubmission({ id: "submissionId" in result ? result.submissionId! : "", status: "submitted", submitted_at: new Date().toISOString() });
         setDraftMessage("Capstone formally submitted. Reviewers will assess this frozen version of your code and design explanation.");
       }
     } catch {

@@ -81,7 +81,7 @@ export function AcademicOperations({
               <label>Feedback<textarea name="feedback" minLength={20} maxLength={3000} defaultValue={existing?.feedback ?? ""} rows={4} required /></label>
               <button className="button outline" disabled={pending}>Record independent assessment</button>
             </form>}
-            {(role === "reviewer" || role === "administrator") && existing?.score >= 80 && existing.code_tests_passed && <button className="button gold" onClick={() => issue(draft.user_id)} disabled={pending}><Award size={16} /> Issue credential if all requirements pass</button>}
+            {(role === "reviewer" || role === "administrator") && existing && existing.score >= 80 && existing.code_tests_passed && <button className="button gold" onClick={() => issue(draft.user_id)} disabled={pending}><Award size={16} /> Issue credential if all requirements pass</button>}
           </article>;
         }) : <p className="empty-evidence">No formal capstone submissions yet. Student drafts are private and are not assessed until submitted.</p>}
       </section>
