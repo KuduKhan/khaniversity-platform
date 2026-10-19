@@ -10,11 +10,13 @@ import { Professor } from "./professor";
 export function CourseModule({
   module,
   preview,
+  approvedMaterial = null,
   initialScore = null,
   initialDraft,
 }: {
   module: LearnerModule;
   preview: boolean;
+  approvedMaterial?: { title: string; body: string; id: number } | null;
   initialScore?: number | null;
   initialDraft?: { title: string; code: string; reflection: string } | null;
 }) {
@@ -98,6 +100,12 @@ export function CourseModule({
         {existing !== null && <span className="tag">BEST CHECK · {existing}%</span>}
       </header>
 
+      {approvedMaterial && <section className="module-reading" aria-label="Faculty-reviewed lesson material">
+        <span className="eyebrow">FACULTY APPROVED · ADDITIONAL TEACHING MATERIAL #{approvedMaterial.id}</span>
+        <h2>{approvedMaterial.title}</h2>
+        <p style={{ whiteSpace: "pre-wrap" }}>{approvedMaterial.body}</p>
+        <small>This supplement was approved by an independent academic reviewer. The versioned assessment remains unchanged.</small>
+      </section>}
       {module.sections.map((section, index) => (
         <section className="module-reading" key={section.heading}>
           <p className="eyebrow">{String(index + 1).padStart(2, "0")} / LESSON</p>

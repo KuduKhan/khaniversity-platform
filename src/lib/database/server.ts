@@ -56,5 +56,8 @@ export async function requireCourseStaff(
     .eq("course_id", courseId);
   if (error || !data?.some((entry) => allowed.includes(entry.role)))
     redirect("/dashboard");
-  return { ...student, role: data.find((entry) => allowed.includes(entry.role))!.role };
+  const weight: Record<string, number> = { administrator: 3, reviewer: 2, instructor: 1 };
+  const eligible = data.filter((entry) => allowed.includes(entry.role));
+  eligible.sort((a,b) => (weight[b.role] ?? 0) - (weight[a.role] ?? 0));
+  return { ...student, role: eligible[0].role };
 }

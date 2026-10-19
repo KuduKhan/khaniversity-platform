@@ -20,8 +20,10 @@ export function Lesson({
   preview,
   initial = emptyState,
   questions,
+  approvedMaterial = null,
 }: {
   preview: boolean;
+  approvedMaterial?: { title: string; body: string; id: number } | null;
   initial?: LearningState;
   questions: LessonQuestion[];
 }) {
@@ -161,6 +163,12 @@ export function Lesson({
               </span>
             )}
           </div>
+          {approvedMaterial && <section className="module-reading" aria-label="Faculty reviewed lesson material">
+            <span className="eyebrow">FACULTY APPROVED · TEACHING SUPPLEMENT #{approvedMaterial.id}</span>
+            <h2>{approvedMaterial.title}</h2>
+            <p style={{ whiteSpace: "pre-wrap" }}>{approvedMaterial.body}</p>
+            <small>This material is approved teaching content; graded questions remain in the separately versioned assessment service.</small>
+          </section>}
           <section id="outcomes">
             <h2>What you’ll learn</h2>
             <p>By the end of this lesson, you should be able to:</p>

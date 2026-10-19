@@ -7,6 +7,7 @@ import {
 } from "@/modules/academics/diagnostic";
 import { savePreview, updatePreview, usePreviewRecord } from "./preview-store";
 import { codelabDraftKey, starterPython, safeDraft } from "@/modules/platforms/code-drafts";
+import { submitCodeSolution, type SavedCodeSubmission } from "@/modules/codelab/actions";
 
 export function AdaptivePath({ preview = true }: { preview?: boolean }) {
   const { state } = usePreviewRecord();
@@ -133,7 +134,7 @@ function subscribeCodeDraft(onChange: () => void) {
   };
 }
 
-export function CodeLab({ preview = true, accountId }: { preview?: boolean; accountId?: string }) {
+export function CodeLab({ preview = true, accountId, savedSubmissions = [] }: { preview?: boolean; accountId?: string; savedSubmissions?: SavedCodeSubmission[] }) {
   const { state } = usePreviewRecord();
   const draftKey = codelabDraftKey(preview, accountId);
   const storedDraft = useSyncExternalStore(
@@ -153,6 +154,9 @@ export function CodeLab({ preview = true, accountId }: { preview?: boolean; acco
       window.dispatchEvent(new Event("khaniversity-codelab-draft"));
     } catch { /* Keep the editable in-memory code even when storage is denied. */ }
   }
+  const [history, setHistory] = useState(savedSubmissions);
+  const [submissionBusy, setSubmissionBusy] = useState(false);
+  const [submissionMessage, setSubmissionMessage] = useState("");
   const [status, setStatus] = useState("Starting Python…");
   const [output, setOutput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -223,6 +227,18 @@ export function CodeLab({ preview = true, accountId }: { preview?: boolean; acco
     setOutput("");
     try { localStorage.removeItem(draftKey); window.dispatchEvent(new Event("khaniversity-codelab-draft")); } catch { /* Storage is optional. */ }
   }
+  async function submitAccountCode() {
+    setSubmissionBusy(true); setSubmissionMessage("");
+    try {
+      const result = await submitCodeSolution(code);
+      if (result.error) setSubmissionMessage(result.error);
+      else if (result.submission) {
+        setHistory(current => [result.submission!, ...current].slice(0, 10));
+        setSubmissionMessage("Your code is saved to your account. Staff verification is pending; this is not a graded result.");
+      }
+    } catch { setSubmissionMessage("Could not submit code. Sign in, enroll in CS101 and try again."); }
+    finally { setSubmissionBusy(false); }
+  }
   function exportPython() {
     const file = new Blob([code + "\n"], { type: "text/x-python;charset=utf-8" });
     const url = URL.createObjectURL(file);
@@ -237,7 +253,7 @@ export function CodeLab({ preview = true, accountId }: { preview?: boolean; acco
       <p className="eyebrow">CS101 · HANDS-ON PRACTICE</p>
       <h1>Python CodeLab</h1>
       <p className="tool-lede">
-        Write and run Python in a separate browser worker. Your draft is kept on this device for this workspace, not in the university database. Practice results are formative, not verified grades. Export a copy if you need to keep it beyond this browser.
+        Write and run Python in a separate browser worker. Drafts are kept in this browser. {preview ? "Try the checks and export your code; preview records stay on this device." : "Submit the finished source to your private student account for independent review. Browser checks are formative; they are not official grades."}
       </p>
       <section className="tool-panel">
         <div className="lab-top">
@@ -258,7 +274,7 @@ export function CodeLab({ preview = true, accountId }: { preview?: boolean; acco
           value={code}
           onChange={(e) => editCode(e.target.value)}
         />
-        <p className="fine-print" role="status">Draft is kept in this browser only · not submitted for grading</p>
+        <p className="fine-print" role="status">{preview ? "Draft is kept in this browser only · preview evidence" : "Autosaved browser draft · use Submit solution to save an account-backed submission"}</p>
         <div className="tool-actions">
           <button
             className="button outline"
@@ -269,6 +285,9 @@ export function CodeLab({ preview = true, accountId }: { preview?: boolean; acco
           </button>
           <button className="button outline" type="button" onClick={exportPython}>Export .py draft</button>
           <button className="text-button" type="button" onClick={resetDraft}>Reset local draft</button>
+          {!preview && <button className="button outline" type="button" disabled={submissionBusy||busy||code.trim().length<10} onClick={submitAccountCode}>
+            {submissionBusy ? "Submitting…" : "Submit solution to account"}
+          </button>}
           <button
             className="button gold"
             disabled={busy || !status.includes("ready")}
@@ -281,12 +300,23 @@ export function CodeLab({ preview = true, accountId }: { preview?: boolean; acco
           {output ||
             "Output will appear here. Challenge checks cover typical, empty, and single-item inputs."}
         </pre>
+        {!preview && <p role="status" className="save-error">{submissionMessage}</p>}
         {preview && state.codeChallenges?.["total-minutes"]?.passed && (
           <p className="success-note">
             ✓ Challenge passed · saved to your local Skills Passport
           </p>
         )}
       </section>
+      {!preview && <section className="tool-panel" aria-labelledby="code-submission-history">
+        <h2 id="code-submission-history">Your submitted solutions</h2>
+        <p>These are saved to your student account, not just this browser. Only you and assigned course staff can read them. Reviewed checks are faculty-verified, not a course award.</p>
+        {history.length ? <div className="code-history">{history.map(item=><article key={item.id}>
+          <div className="lab-top"><strong>{new Date(item.submitted_at).toLocaleString()}</strong>
+            <span className="tag">{item.status === "reviewed" ? "Staff checks verified" : item.status === "needs-work" ? "Needs revision" : "Awaiting review"}</span></div>
+          <p>{item.feedback || "Awaiting a reviewer's feedback."}</p>
+          <button type="button" className="button outline small" onClick={()=>editCode(item.source_code)}>Load this submitted version into the editor</button>
+        </article>)}</div> : <p>No submitted solutions yet. Run your code, inspect the output, then submit a version for review.</p>}
+      </section>}
     </div>
   );
 }

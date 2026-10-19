@@ -4,6 +4,7 @@ import { CourseModule } from "@/components/course-module";
 import { getCourseModule } from "@/modules/academics/curriculum";
 import { redactAssessmentAnswers } from "@/modules/academics/transport";
 import { requireStudent } from "@/lib/database/server";
+import { latestApprovedMaterial } from "@/modules/curriculum/published";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export default async function StudentCourseModule({
     .order("score", { ascending: false })
     .limit(1)
     .maybeSingle();
+  const approvedMaterial = await latestApprovedMaterial(courseModule.id);
   const draftResult = courseModule.project
     ? await db
         .from("project_drafts")
@@ -45,6 +47,7 @@ export default async function StudentCourseModule({
       <CourseModule
         module={redactAssessmentAnswers(courseModule)}
         preview={false}
+        approvedMaterial={approvedMaterial}
         initialScore={data?.score ?? null}
         initialDraft={draftResult.data ? {
           title: draftResult.data.title,
