@@ -18,7 +18,8 @@ const moduleNames = new Map(courseModules.map((lesson, index) =>
 
 export default async function AcademicRecordPage() {
   const { db, id, email } = await requireStudent();
-  const [attempts, code, capstones, reviews, awards, diagnostics, enrollment] = await Promise.all([
+  const [progress, attempts, code, capstones, reviews, awards, diagnostics, enrollment] = await Promise.all([
+    db.from("lesson_progress").select("lesson_id,content_version,score,completed,updated_at").eq("user_id",id).order("updated_at", { ascending:false }),
     db.from("assessment_attempts").select("id,module_id,score,submitted_at").eq("user_id", id).order("submitted_at", { ascending: false }).limit(100),
     db.from("code_submissions").select("id,exercise_id,status,code_tests_passed,feedback,submitted_at,reviewed_at").eq("user_id", id).eq("course_id","cs101").order("submitted_at", { ascending: false }).limit(100),
     db.from("capstone_submissions").select("id,title,status,submitted_at,reviewed_at").eq("user_id", id).eq("course_id","cs101").order("submitted_at", { ascending: false }).limit(100),
@@ -27,11 +28,11 @@ export default async function AcademicRecordPage() {
     db.from("learning_diagnostics").select("score,created_at").eq("user_id",id).eq("course_id","cs101").order("created_at", { ascending: false }).limit(10),
     db.from("enrollments").select("course_id").eq("user_id",id).eq("course_id","cs101").maybeSingle(),
   ]);
-  if ([attempts,code,capstones,reviews,awards,diagnostics,enrollment].some(item => item.error))
+  if ([progress,attempts,code,capstones,reviews,awards,diagnostics,enrollment].some(item => item.error))
     throw new Error("Your private academic record is temporarily unavailable. Please retry.");
 
   const data: TranscriptData = {
-    attempts: attempts.data ?? [], code: code.data ?? [], capstones: capstones.data ?? [],
+    progress: progress.data ?? [], attempts: attempts.data ?? [], code: code.data ?? [], capstones: capstones.data ?? [],
     reviews: reviews.data ?? [], awards: awards.data ?? [], diagnostics: diagnostics.data ?? [],
   };
   const totals = summarizeTranscript(data);
@@ -44,7 +45,7 @@ export default async function AcademicRecordPage() {
         <span className={styles.enrollment}>{enrollment.data ? "CS101 · Enrolled" : "CS101 · Enrollment not yet recorded"}</span>
       </header>
       <section aria-label="Academic record summary" className={styles.stats}>
-        <div><strong>{totals.masteredModules} / 10</strong><span>Modules with a passing check in the recent attempt history</span></div>
+        <div><strong>{totals.masteredModules} / 10</strong><span>Modules mastered in your current learning record</span></div>
         <div><strong>{totals.pendingReviews}</strong><span>Submissions awaiting academic review</span></div>
         <div><strong>{totals.reviewedCode}</strong><span>Staff-reviewed passing code submissions</span></div>
         <div><strong>{totals.activeAwards}</strong><span>Active internal academy awards</span></div>
