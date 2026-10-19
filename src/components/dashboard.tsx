@@ -93,7 +93,7 @@ export function Dashboard({
               className="button gold"
               href={moduleHref(nextModule.id)}
             >
-              {completedModules === courseModules.length ? "Review your capstone" : "Continue learning"}{" "}
+              {completedModules === courseModules.length ? "Review your capstone" : state.completed ? "Continue your pathway" : "Continue learning"}{" "}
               <ArrowRight size={17} />
             </Link>
           ) : (
