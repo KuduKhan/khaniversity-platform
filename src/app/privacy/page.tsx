@@ -12,10 +12,10 @@ export default function PrivacyPage() {
     <main id="main" className="section catalog-page">
       <p className="eyebrow">STUDENT RIGHTS · RELEASE 0.2</p>
       <h1>Your learning data matters.</h1>
-      <p className="lead">This page describes the platform's current data flows. It is an engineering disclosure, not a substitute for a finalized legal privacy notice or institutional data-governance policy.</p>
+      <p className="lead">This page describes the platform&apos;s current data flows. It is an engineering disclosure, not a substitute for a finalized legal privacy notice or institutional data-governance policy.</p>
       <section className="module-reading">
         <h2>Learning without an account</h2>
-        <p>The public preview stores lesson results, diagnostics, Python challenge outcomes, and lab records in this browser's local storage. They do not represent verified university credentials and are not automatically synced to a student account. Clearing browser data may erase them.</p>
+        <p>The public preview stores lesson results, diagnostics, Python challenge outcomes, and lab records in this browser&apos;s local storage. They do not represent verified university credentials and are not automatically synced to a student account. Clearing browser data may erase them.</p>
       </section>
       <section className="module-reading">
         <h2>Signed-in academic records</h2>
@@ -23,11 +23,11 @@ export default function PrivacyPage() {
       </section>
       <section className="module-reading">
         <h2>AI Professor and CodeLab</h2>
-        <p>If configured, typed AI Professor questions are sent to the selected external AI provider for a response. The platform does not currently persist tutor chat history, but the provider's own terms and processing policies may apply. CodeLab executes Python in your browser; exporting code requires an explicit action. Do not enter secrets or sensitive personal records into either tool.</p>
+        <p>If configured, typed AI Professor questions are sent to the selected external AI provider for a response. The platform does not currently persist tutor chat history, but the provider&apos;s own terms and processing policies may apply. CodeLab executes Python in your browser; exporting code requires an explicit action. Do not enter secrets or sensitive personal records into either tool.</p>
       </section>
       <section className="module-reading">
         <h2>Credential verification</h2>
-        <p>An issued course award can be checked using its reference code. A valid code may reveal the recipient's certificate name, course title, award status, date and evidence summary. The awards are not accredited degrees.</p>
+        <p>An issued course award can be checked using its reference code. A valid code may reveal the recipient&apos;s certificate name, course title, award status, date and evidence summary. The awards are not accredited degrees.</p>
       </section>
       <section className="module-reading">
         <h2>Before the public learner pilot</h2>
