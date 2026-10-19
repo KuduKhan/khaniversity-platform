@@ -35,6 +35,23 @@ The final-phase social layer is represented by account-backed cohorts, discussio
 
 A public-facing learning-data disclosure is available at `/privacy`. It deliberately flags retention, deletion, data-controller contact, and legal-governance decisions as incomplete rather than asserting unverified compliance.
 
+## Original blueprint Sections 07 and 08 — five connected platforms
+
+The unified `/platforms` gateway organizes the original Public Site, Student Portal,
+Learning Studio, CodeLab and Academic Administration within one modular monolith.
+The new `/admissions` page provides a transparent pilot-entry route without
+accreditation claims. CodeLab now restores bounded browser-local Python drafts
+without mixing anonymous preview data with another student's account draft.
+Course staff have a protected, read-only CS101 curriculum publication register
+showing actual database versions and publication status.
+
+The nine Section 07 data domains are recorded as an explicit existing-versus-planned
+registry in `src/modules/platforms/data-domains.ts`. This intentionally does NOT
+create missing tables like `ai_usage`, `mastery_records`, `code_submissions`
+or `feature_flags` without reviewed migrations, ownership/RLS decisions and
+an approved connected release gate. Account-backed grade data is not inferred
+from browser-only code drafts.
+
 ## External setup boundaries
 
 The full application runs locally without cloud credentials in preview mode. Account-backed learning requires applying both ordered Supabase migrations and setting the public project URL and publishable key. Live AI requires a valid server-only provider key. Labs currently simulate infrastructure rather than provision cloud resources. Email delivery, public hosting and an institutional accreditation process are external operations and are not represented as completed.

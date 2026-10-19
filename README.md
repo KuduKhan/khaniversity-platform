@@ -43,6 +43,19 @@ The preview tools remain available at `/preview/path`, `/preview/codelab`, `/pre
 
 Students can request password recovery at `/recover`. PKCE email links return through `/auth/callback`, which exchanges the code server-side; `/reset-password` updates the password and signs the student out. Add your deployed HTTPS origin and `https://YOUR-DOMAIN/auth/callback` to Supabase Auth Redirect URLs and configure reliable SMTP. Recovery emails use neutral responses to avoid confirming account existence. Verify delivery, expiry, password update and a new sign-in with a designated test account before launch.
 
+## The five blueprint platforms
+
+Visit `/platforms` for the university's five original connected interfaces,
+or `/admissions` for a transparent CS101 pilot entry guide.
+The student portal and Learning Studio share authenticated CS101 progress.
+CodeLab resumes and exports a private browser-local Python draft per account
+or visitor preview, but it does not treat local code as a graded submission.
+Course-authoring permissions are not self-assigned; approved staff can view a
+read-only curriculum publication register at `/admin` in addition to existing
+capstone review and audit workflows. See
+`docs/product/release-0.2.md` for the Section 07 existing/planned data
+boundary. Unimplemented blueprint tables were not installed on live Supabase.
+
 ## Quality checks
 
 ```powershell
