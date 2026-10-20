@@ -46,7 +46,9 @@ export function pilotQueueCount(data: PilotSummary): number {
 
 export function summarizePilot(input: PilotInput, now = new Date()): PilotSummary {
   const enrolled = new Set(input.enrollments.map(row => row.user_id));
-  const published = new Map(input.lessons.filter(l => l.published).map(l => [l.id + ":" + l.content_version, l.module_id]));
+  const courseModules = new Set(input.modules.map(m => m.id));
+  const published = new Map(input.lessons.filter(l => l.published && courseModules.has(l.module_id))
+    .map(l => [l.id + ":" + l.content_version, l.module_id]));
   const mastery = new Map<string, Set<string>>();
   const started = new Set<string>();
   const firstMastered = new Set<string>();
@@ -66,10 +68,12 @@ export function summarizePilot(input: PilotInput, now = new Date()): PilotSummar
   const codeApproved = new Set(input.code.filter(item =>
     enrolled.has(item.user_id) && item.status === "reviewed" && item.code_tests_passed,
   ).map(item => item.user_id));
-  const approvedSubmissionIds = new Set(input.capstones.filter(c => c.status === "reviewed").map(c => c.id));
+  const approvedSubmissions = new Map(input.capstones.filter(c => c.status === "reviewed")
+    .map(c => [c.id, c.user_id]));
   const capstoneApproved = new Set(input.reviews.filter(item =>
     enrolled.has(item.user_id) && !!item.submission_id &&
-    approvedSubmissionIds.has(item.submission_id) && item.score >= 80 && item.code_tests_passed,
+    approvedSubmissions.get(item.submission_id) === item.user_id &&
+    item.score >= 80 && item.code_tests_passed,
   ).map(item => item.user_id));
   const completed = [...enrolled].filter(id =>
     mastery.get(id)?.size === 10 && codeApproved.has(id) && capstoneApproved.has(id),
