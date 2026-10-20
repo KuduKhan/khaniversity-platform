@@ -1,7 +1,7 @@
 {
   "name": "khaniversity-platform",
-  "version": "0.2.0",
-  "description": "KHANIVERSITY Foundation Release 0.2 — Learning Systems Preview",
+  "version": "0.3.0",
+  "description": "KHANIVERSITY 0.3 — CS101 Pilot and Academic Operations",
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
