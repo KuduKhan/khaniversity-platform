@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   return <>
     <PublicHeader />
     <main id="main" className="section catalog-page">
-      <p className="eyebrow">STUDENT RIGHTS · RELEASE 0.2</p>
+      <p className="eyebrow">STUDENT RIGHTS · RELEASE 0.3</p>
       <h1>Your learning data matters.</h1>
       <p className="lead">This page describes the platform&apos;s current data flows. It is an engineering disclosure, not a substitute for a finalized legal privacy notice or institutional data-governance policy.</p>
       <section className="module-reading">
@@ -20,6 +20,10 @@ export default function PrivacyPage() {
       <section className="module-reading">
         <h2>Signed-in academic records</h2>
         <p>Supabase stores account identity, course enrollment, formative assessment results, optional drafts, and any cohort participation or academic awards. Student records use database access policies; authorized course staff can access selected educational workflows. Exported JSON files are editable and do not independently prove achievement.</p>
+      </section>
+      <section className="module-reading">
+        <h2>Academic pilot reporting</h2>
+        <p>Authorized course staff can view aggregated enrollment, lesson activation, module mastery and review workload statistics for the CS101 pilot. These totals are calculated from account-backed learning records protected by server authorization and database row-level security. The dashboard does not publish individual student profiles or grades. The metrics are educational operational evidence, not a public ranking or a claim of verified graduation.</p>
       </section>
       <section className="module-reading">
         <h2>AI Professor and CodeLab</h2>
