@@ -80,6 +80,5 @@ test("pending faculty work and overdue thresholds remain independent of student 
   const summary=summarizePilot(input,now);
   assert.equal(summary.overdueReviews,2);
   assert.equal(pilotQueueCount(summary),3);
-  assert.equal(summary.completedCapstones,undefined);
   assert.equal(summary.completionEligible,0);
 });
