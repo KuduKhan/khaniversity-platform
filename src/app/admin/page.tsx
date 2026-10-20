@@ -13,7 +13,7 @@ import { requireCourseStaff } from "@/lib/database/server";
 export const dynamic = "force-dynamic";
 
 export default async function AcademicOperationsPage() {
-  const { db, email, role } = await requireCourseStaff("cs101");
+  const { db, email, role, id } = await requireCourseStaff("cs101");
   const pilotMetrics = await loadPilotSummary(db);
   const [{ data: drafts }, { data: audit }, registeredModules, registeredLessons, revisions, codeQueue, studentEnrollments, staffAssignments] = await Promise.all([
     db.from("capstone_submissions").select("id,user_id,title,source_code,reflection,submitted_at,status").eq("course_id", "cs101").order("submitted_at", { ascending: false }).limit(100),
@@ -45,7 +45,7 @@ export default async function AcademicOperationsPage() {
           .map(lesson=>({id:lesson.id,title:lesson.title}))}
       />
       <CodeReviewQueue submissions={codeQueue.data ?? []} />
-      {role === "administrator" && <StaffManagement staff={staffAssignments.data ?? []} />}
+      {role === "administrator" && <StaffManagement staff={staffAssignments.data ?? []} currentUserId={id} />}
       <CurriculumRegister modules={registeredModules.data ?? []} lessons={registeredLessons.data ?? []} />
       <AcademicOperations
         role={role}
