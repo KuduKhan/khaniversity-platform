@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function AcademicOperationsPage() {
   const { db, email, role, id } = await requireCourseStaff("cs101");
   const pilotMetrics = await loadPilotSummary(db);
-  const [{ data: drafts }, { data: audit }, registeredModules, registeredLessons, revisions, codeQueue, studentEnrollments, staffAssignments] = await Promise.all([
+  const [{ data: drafts }, { data: audit }, registeredModules, registeredLessons, revisions, codeQueue, staffAssignments] = await Promise.all([
     db.from("capstone_submissions").select("id,user_id,title,source_code,reflection,submitted_at,status").eq("course_id", "cs101").order("submitted_at", { ascending: false }).limit(100),
     db.from("audit_logs").select("id,action,target_user_id,details,created_at").eq("course_id", "cs101").order("created_at", { ascending: false }).limit(40),
     db.from("modules").select("id,title").eq("course_id", "cs101").order("id"),
@@ -24,10 +24,9 @@ export default async function AcademicOperationsPage() {
       .eq("course_id", "cs101").order("id", { ascending: false }).limit(50),
     db.from("code_submissions").select("id,user_id,source_code,status,submitted_at,code_tests_passed,feedback")
       .eq("course_id", "cs101").order("submitted_at", { ascending: false }).limit(50),
-    db.from("enrollments").select("user_id", { count: "exact", head: true }).eq("course_id", "cs101"),
     db.from("course_staff").select("user_id,role,granted_at").eq("course_id","cs101").order("granted_at", { ascending: false }),
   ]);
-  if (registeredModules.error || registeredLessons.error || revisions.error || codeQueue.error || studentEnrollments.error || staffAssignments.error)
+  if (registeredModules.error || registeredLessons.error || revisions.error || codeQueue.error || staffAssignments.error)
     throw new Error("The academic publication register is temporarily unavailable.");
   const learnerIds = [...new Set((drafts ?? []).map((draft) => draft.user_id))];
   const [{ data: profiles }, { data: reviews }] = learnerIds.length
