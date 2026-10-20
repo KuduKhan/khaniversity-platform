@@ -110,7 +110,12 @@ export default function Home() {
                 Enter the learning workspace <ArrowUpRight size={17} />
               </Link>
             </div>
-            <p><Link className="text-link" href="/platforms">Explore all five KHANIVERSITY platforms <ArrowUpRight size={16} aria-hidden /></Link></p>
+            <p className="hero-platforms">
+              <Link className="text-link" href="/platforms">
+                Explore all five platforms{" "}
+                <ArrowUpRight size={15} aria-hidden />
+              </Link>
+            </p>
             <ul className="hero-note" aria-label="Course format">
               <li>
                 <Check size={13} aria-hidden /> Beginner friendly

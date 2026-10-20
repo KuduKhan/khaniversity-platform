@@ -24,6 +24,8 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/auth/") || url.pathname.startsWith("/dashboard") || url.pathname.startsWith("/learn/") || url.pathname.startsWith("/admin/")) return;
 
   if (url.pathname.startsWith("/_next/static/")) {
+    // Dev chunk URLs are reused; caching them can show an old menu after edits.
+    if (self.location.hostname === "127.0.0.1" || self.location.hostname === "localhost") return;
     event.respondWith(caches.open(STATIC).then(async (cache) => {
       const cached = await cache.match(request);
       if (cached) return cached;

@@ -434,6 +434,15 @@ test("premium campus navigation stays operable on phones and desktop", async ({ 
     const hero = await page.locator(".hero").boundingBox();
     expect(hero?.width).toBeGreaterThan(250);
     if (isCompact) {
+      const rows = await navigation.getByRole("link").evaluateAll(links => links.map(link => {
+        const box = link.getBoundingClientRect();
+        return { left: box.left, top: box.top, bottom: box.bottom, width: box.width };
+      }));
+      for (let index = 1; index < rows.length; index++) {
+        expect(Math.abs(rows[index].left - rows[0].left)).toBeLessThan(1);
+        expect(Math.abs(rows[index].width - rows[0].width)).toBeLessThan(1);
+        expect(rows[index].top).toBeGreaterThanOrEqual(rows[index - 1].bottom);
+      }
       await page.keyboard.press("Escape");
       await expect(toggle).toBeFocused();
       await expect(navigation).toBeHidden();

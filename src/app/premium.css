@@ -365,7 +365,7 @@ button:disabled { cursor: not-allowed; opacity: .62; }
     border: 1px solid #d9e5df;
     box-shadow: 0 25px 55px rgba(10, 37, 41, .17);
   }
-  .public-header .public-navigation > nav.site-menu-open { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .public-header .public-navigation > nav.site-menu-open { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
   .public-header .public-navigation > nav a,
   .public-header .public-navigation > nav a.header-catalog,
   .public-header .public-navigation > nav a.header-workspace,
@@ -375,7 +375,7 @@ button:disabled { cursor: not-allowed; opacity: .62; }
     display: flex; min-width: 0; width: auto; height: auto; min-height: 49px; max-width: none;
     white-space: normal; justify-content: flex-start; padding: 12px 13px; font-size: 13px; text-align: left;
   }
-  .public-header .public-navigation > nav a.header-workspace { grid-column: 1 / -1; }
+  .public-header .public-navigation > nav a.header-workspace { width: 100%; }
   .hero { min-height: 0; }
   .hero-copy { padding: 46px clamp(23px, 5vw, 62px); }
   .study-shortcuts { gap: 10px; }
@@ -437,4 +437,84 @@ button:disabled { cursor: not-allowed; opacity: .62; }
 @media (forced-colors: active) {
   .button, .study-shortcuts > a, .system-card, .public-menu-toggle { border: 1px solid CanvasText; }
   .sidebar nav a[aria-current="page"] { outline: 2px solid Highlight; }
+}
+
+/* Compact site menu: one clear destination per row, with no hidden labels. */
+@media (max-width: 1120px) {
+  .public-header .public-menu-toggle { min-height: 38px; gap: 6px; padding: 8px 10px; border-radius: 9px; font-size: 11px; line-height: 1.4; box-shadow: none; }
+  .public-header .public-menu-toggle > svg { width: 18px; height: 18px; }
+  .public-header .public-navigation > nav.site-menu-open {
+    display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+    left: auto; right: clamp(14px, 3.5vw, 40px); top: calc(100% + 6px);
+    width: min(340px, calc(100vw - 28px)); max-height: calc(100dvh - 100px);
+    gap: 4px; padding: 9px; overflow-y: auto; overscroll-behavior: contain;
+    border-radius: 14px; border: 1px solid #d9e2da; background: #fafbf8;
+    box-shadow: 0 14px 35px #112c351a;
+  }
+  .public-header .public-navigation > nav.site-menu-open a {
+    display: flex; flex: 0 0 auto; width: 100%; min-height: 48px; height: auto;
+    min-width: 0; max-width: none; padding: 12px 14px; gap: 12px;
+    justify-content: flex-start; border: 1px solid transparent; border-radius: 9px;
+    font-size: 13px; font-weight: 600; line-height: 1.5; letter-spacing: 0;
+    text-align: left; white-space: normal; background: transparent; color: var(--ink);
+  }
+  .public-header .public-navigation > nav.site-menu-open a > svg { display: block; width: 19px; height: 19px; flex-shrink: 0; color: var(--green); }
+  .public-header .public-navigation > nav.site-menu-open a > span { display: block; min-width: 0; overflow-wrap: anywhere; }
+  .public-header .public-navigation > nav.site-menu-open a:hover:not(.button) { background: #edf2e9; }
+  .public-header .public-navigation > nav.site-menu-open a[aria-current="page"]:not(.button) { background: #edf2e9; box-shadow: inset 3px 0 var(--gold); color: var(--ink); }
+  .public-header .public-navigation > nav.site-menu-open a.header-signin { border-top-color: #e1e7df; border-radius: 0 0 9px 9px; margin-top: 3px; }
+  .public-header .public-navigation > nav.site-menu-open a.header-workspace { margin-top: 4px; background: var(--navy); color: #fff; border-color: var(--navy); box-shadow: none; }
+  .public-header .public-navigation > nav.site-menu-open a.header-workspace > svg { color: var(--gold); }
+  .public-header .public-navigation > nav.site-menu-open a:focus-visible { outline: 2px solid var(--green); outline-offset: -2px; }
+}
+@media (max-width: 640px) {
+  .public-header .public-navigation > nav.site-menu-open { left: 12px; right: 12px; width: auto; max-height: calc(100dvh - 90px); }
+}
+
+/* A concise academy introduction with a compact visual footprint. */
+.hero { min-height: 0; margin-top: 14px; border-radius: 22px; }
+.hero-copy { padding: 38px clamp(24px, 4vw, 60px); }
+.hero .eyebrow { margin-bottom: 16px; font-size: 9px; }
+.hero h1 { font-size: clamp(35px, 4.2vw, 62px); line-height: 1.08; letter-spacing: -.045em; margin-bottom: 18px; }
+.hero-intro { font-size: 15px; line-height: 1.55; margin-bottom: 7px; }
+.hero-description { font-size: 14px; line-height: 1.7; max-width: 49ch; }
+.hero .actions { margin-top: 21px; gap: 10px; }
+.hero .actions > a { min-height: 44px; padding: 11px 16px; font-size: 12px; }
+.hero-copy .hero-platforms { margin: 9px 0 0; }
+.hero-platforms .text-link { display: inline-flex; min-height: 34px; gap: 7px; font-size: 11px; font-weight: 600; line-height: 1.5; }
+.hero .hero-note { margin-top: 13px; gap: 7px 14px; font-size: 10px; }
+.hero-art { min-height: 360px; }
+.hero-art .gateway { height: 54%; top: 23%; width: 48%; left: 26%; }
+.hero-art .art-coord { top: 23px; left: 24px; }
+.hero-art .art-caption { left: 24px; right: 24px; bottom: 22px; }
+@media (max-width: 1120px) {
+  .hero-copy { padding: 32px 28px; }
+}
+@media (max-width: 850px) {
+  .hero-art { min-height: 210px; }
+  .hero-art .gateway { width: 130px; height: 135px; top: 34px; left: calc(50% - 65px); }
+  .hero-art .orbit { width: 200px; }
+  .hero-art .orbit-two { width: 160px; }
+}
+@media (max-width: 640px) {
+  .hero { margin-top: 10px; border-radius: 18px; }
+  .hero-copy { padding: 25px 21px 22px; }
+  .hero .eyebrow { font-size: 8px; margin-bottom: 13px; line-height: 1.5; }
+  .hero h1 { font-size: clamp(30px, 8.8vw, 43px); margin-bottom: 15px; line-height: 1.08; }
+  .hero-intro { font-size: 13px; line-height: 1.55; margin-bottom: 6px; }
+  .hero-description { font-size: 13px; line-height: 1.7; }
+  .hero .actions { gap: 8px; margin-top: 17px; }
+  .hero .actions > a { min-height: 44px; padding: 10px 15px; font-size: 12px; }
+  .hero-copy .hero-platforms { margin-top: 7px; }
+  .hero-platforms .text-link { min-height: 32px; font-size: 11px; }
+  .hero .hero-note { margin-top: 12px; gap: 6px 11px; font-size: 9px; line-height: 1.5; }
+  .hero-note svg { width: 12px; height: 12px; }
+  .hero-art { min-height: 180px; }
+  .hero-art .gateway { width: 112px; height: 112px; top: 32px; left: calc(50% - 56px); }
+  .hero-art .orbit { width: 156px; }
+  .hero-art .orbit-two { width: 125px; }
+  .hero-art .art-coord { top: 14px; left: 18px; font-size: 7px; }
+  .hero-art .art-caption { left: 18px; right: 18px; bottom: 12px; font-size: 7px; }
+  .hero-art .art-caption-icon { width: 28px; height: 28px; }
+  .hero-art .art-caption-icon > svg { width: 18px; height: 18px; }
 }

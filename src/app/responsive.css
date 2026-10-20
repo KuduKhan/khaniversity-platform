@@ -197,3 +197,18 @@
   .catalog-card, .system-card { padding-inline: 16px; }
   .path-module { gap: 8px; }
 }
+
+/* Phone polish: readable workspace branding and short, balanced labels. */
+@media (max-width: 640px) {
+  .student-shell > .sidebar { background: var(--paper); color: var(--ink); border-right: 0; border-bottom: 1px solid var(--line); }
+  .sidebar .sidebar-header .brand { color: var(--navy); }
+  .sidebar .sidebar-header .brand .brand-wordmark small { color: var(--muted); }
+  .navigation-open .workspace-navigation { background: var(--deep); color: #e5eadd; }
+  .hero .hero-note { font-size: 11px; gap: 7px 13px; line-height: 1.5; }
+  .hero .hero-note svg { width: 13px; height: 13px; }
+  .principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 10px; padding: 21px 16px; text-align: center; }
+  .principles > span { grid-column: 1 / -1; font-size: 9px; }
+  .principles > i { display: none; }
+  .principles > p { display: grid; align-items: center; min-height: 36px; margin: 0; font-size: 13px; line-height: 1.45; text-wrap: balance; }
+  .auth-card input, .auth-card textarea, .auth-card select { font-size: 16px; }
+}
