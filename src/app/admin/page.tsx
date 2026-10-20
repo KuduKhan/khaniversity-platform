@@ -4,6 +4,8 @@ import { CurriculumRegister } from "@/components/curriculum-register";
 import { CurriculumWorkflow } from "@/components/curriculum-workflow";
 import { CodeReviewQueue } from "@/components/code-review-queue";
 import { StaffManagement } from "@/components/staff-management";
+import { PilotCommandCenter } from "@/components/pilot-command-center";
+import { loadPilotSummary } from "@/modules/operations/pilot-data";
 import { getCourseModule } from "@/modules/academics/curriculum";
 
 import { requireCourseStaff } from "@/lib/database/server";
@@ -12,6 +14,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AcademicOperationsPage() {
   const { db, email, role } = await requireCourseStaff("cs101");
+  const pilotMetrics = await loadPilotSummary(db);
   const [{ data: drafts }, { data: audit }, registeredModules, registeredLessons, revisions, codeQueue, studentEnrollments, staffAssignments] = await Promise.all([
     db.from("capstone_submissions").select("id,user_id,title,source_code,reflection,submitted_at,status").eq("course_id", "cs101").order("submitted_at", { ascending: false }).limit(100),
     db.from("audit_logs").select("id,action,target_user_id,details,created_at").eq("course_id", "cs101").order("created_at", { ascending: false }).limit(40),
@@ -35,11 +38,7 @@ export default async function AcademicOperationsPage() {
     : [{ data: [] }, { data: [] }];
   return (
     <StudentShell preview={false} active="admin" email={email} staff>
-      <section className="tool-panel" aria-label="Live CS101 operational metrics">
-        <span className="eyebrow">CS101 · CURRENT COHORT</span>
-        <h2>Academic operations at a glance</h2>
-        <p>{studentEnrollments.count ?? 0} enrolled students · {codeQueue.data?.filter(x=>x.status==="submitted").length ?? 0} recent code reviews pending · {revisions.data?.filter(x=>x.status==="pending").length ?? 0} curriculum proposals pending. Code and proposal queues display the latest 50 records.</p>
-      </section>
+      <PilotCommandCenter metrics={pilotMetrics} />
       <CurriculumWorkflow role={role}
         revisions={revisions.data ?? []}
         options={(registeredLessons.data ?? []).filter(lesson=>lesson.published && getCourseModule(lesson.id))
