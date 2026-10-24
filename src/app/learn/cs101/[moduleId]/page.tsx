@@ -53,6 +53,7 @@ export default async function StudentCourseModule({
       <CourseModule
         module={redactAssessmentAnswers(courseModule)}
         preview={false}
+        scope={id}
         approvedMaterial={approvedMaterial}
         initialScore={data?.score ?? null}
         initialSubmission={submissionResult.data ? {
