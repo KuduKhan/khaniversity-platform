@@ -17,6 +17,7 @@ export async function studentState() {
   if (enrollment.error || progress.error)
     throw new Error("Unable to load your learning record. Please retry.");
   return {
+    id,
     email,
     isStaff: !!staff.data?.length,
     state: {
