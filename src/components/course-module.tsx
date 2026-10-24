@@ -7,6 +7,7 @@ import type { LearnerModule } from "@/modules/academics/transport";
 import { savePreview, usePreviewRecord } from "./preview-store";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
+import { PracticeStudio } from "./practice-studio";
 
 export function CourseModule({
   module,
@@ -163,6 +164,7 @@ export function CourseModule({
         </section>
       )}
 
+      <PracticeStudio moduleId={module.id} scope={scope} preview={preview} />
       <section className="module-check" id="check">
         <p className="eyebrow">KNOWLEDGE CHECK · 80% TO MASTER</p>
         <h2>Show what you understand.</h2>
