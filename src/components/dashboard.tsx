@@ -16,6 +16,7 @@ import { courseModules } from "@/modules/academics/curriculum";
 import { buildLearningPlan } from "@/modules/academics/learning-plan";
 import styles from "./studentos.module.css";
 import { StudyReviewPanel } from "./study-notebook";
+import { PracticeProgressPanel } from "./practice-studio";
 import { enroll } from "@/modules/enrollments/actions";
 import {
   emptyState,
@@ -99,6 +100,7 @@ export function Dashboard({
         </Link>
       </nav>
       <StudyReviewPanel scope={scope} preview={preview} modules={courseModules.map((m) => ({ id: m.id, title: m.title }))} />
+      <PracticeProgressPanel scope={scope} preview={preview} />
       <section className="welcome-panel">
         <div>
           <span className="tag">COMPUTER SCIENCE ACADEMY</span>
