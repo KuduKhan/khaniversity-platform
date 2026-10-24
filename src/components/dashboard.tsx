@@ -15,6 +15,7 @@ import {
 import { courseModules } from "@/modules/academics/curriculum";
 import { buildLearningPlan } from "@/modules/academics/learning-plan";
 import styles from "./studentos.module.css";
+import { StudyReviewPanel } from "./study-notebook";
 import { enroll } from "@/modules/enrollments/actions";
 import {
   emptyState,
@@ -24,9 +25,11 @@ import {
 } from "./preview-store";
 export function Dashboard({
   preview,
+  scope,
   initial = emptyState,
 }: {
   preview: boolean;
+  scope: string;
   initial?: LearningState;
 }) {
   const [remote, setState] = useState(initial);
@@ -95,6 +98,7 @@ export function Dashboard({
           <ArrowRight size={17} aria-hidden />
         </Link>
       </nav>
+      <StudyReviewPanel scope={scope} preview={preview} modules={courseModules.map((m) => ({ id: m.id, title: m.title }))} />
       <section className="welcome-panel">
         <div>
           <span className="tag">COMPUTER SCIENCE ACADEMY</span>
