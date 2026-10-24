@@ -6,10 +6,12 @@ import { completeModule, saveCapstoneDraft, submitCapstoneForReview } from "@/mo
 import type { LearnerModule } from "@/modules/academics/transport";
 import { savePreview, usePreviewRecord } from "./preview-store";
 import { Professor } from "./professor";
+import { StudyNotebook } from "./study-notebook";
 
 export function CourseModule({
   module,
   preview,
+  scope,
   approvedMaterial = null,
   initialScore = null,
   initialDraft,
@@ -17,6 +19,7 @@ export function CourseModule({
 }: {
   module: LearnerModule;
   preview: boolean;
+  scope: string;
   approvedMaterial?: { title: string; body: string; id: number } | null;
   initialScore?: number | null;
   initialDraft?: { title: string; code: string; reflection: string } | null;
@@ -184,6 +187,7 @@ export function CourseModule({
         {nextModule && <Link className="button" href={moduleUrl(nextModule)}>Continue to the next module <ArrowRight size={17} /></Link>}
         {module.project && <p className="fine-print">Course completion also requires a passing capstone review. A quiz score alone is not a certificate.</p>}
       </section>
+      <StudyNotebook moduleId={module.id} title={module.title} scope={scope} />
       <Professor preview={preview} moduleId={module.id} moduleTitle={module.title} studyGuide={module.sections[0]?.body} />
     </div>
   );

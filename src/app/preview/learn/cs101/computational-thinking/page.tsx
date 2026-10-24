@@ -4,7 +4,7 @@ import { questions } from "@/modules/academics/catalog";
 export default function PreviewLesson() {
   return (
     <StudentShell preview active="lesson">
-      <Lesson preview questions={questions} />
+      <Lesson preview scope="preview" questions={questions} />
     </StudentShell>
   );
 }

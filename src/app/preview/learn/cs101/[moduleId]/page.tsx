@@ -13,7 +13,7 @@ export default async function PreviewCourseModule({
   if (!courseModule || moduleId === "computational-thinking") notFound();
   return (
     <StudentShell preview active="lesson">
-      <CourseModule module={courseModule} preview />
+      <CourseModule module={courseModule} preview scope="preview" />
     </StudentShell>
   );
 }
