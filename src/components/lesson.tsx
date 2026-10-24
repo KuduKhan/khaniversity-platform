@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Check, Clock3, Lightbulb } from "lucide-react";
 import { completeLesson } from "@/modules/enrollments/actions";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
+import { PracticeStudio } from "./practice-studio";
 import {
   emptyState,
   usePreviewRecord,
@@ -136,6 +137,9 @@ export function Lesson({
             </a>
             <a href="#check">
               05 <span>Check your understanding</span>
+            </a>
+            <a href="#practice-studio-computational-thinking">
+              06 <span>Practice Studio</span>
             </a>
           </nav>
           <div className="lesson-version">
@@ -367,6 +371,7 @@ export function Lesson({
               </div>
             )}
           </section>
+          <PracticeStudio moduleId="computational-thinking" scope={scope} preview={preview} />
           <StudyNotebook moduleId="computational-thinking" title="Computational thinking" scope={scope} />
           <Professor preview={preview} />
           <div className="next-lesson">
