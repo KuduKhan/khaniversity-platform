@@ -53,4 +53,10 @@
 .dashboardPanel .disclosure{color:#c5d8d2}
 @media(max-width:800px){.steps{grid-template-columns:minmax(0,1fr)}.dashboardBottom{align-items:stretch;flex-direction:column}.dashboardBottom :global(.button){width:100%}}
 @media(max-width:520px){.header,.dashboardHead{flex-direction:column;align-items:stretch}.label{align-self:flex-start}.actions{display:grid;grid-template-columns:minmax(0,1fr)}.actions>*{width:100%;justify-content:center}.exampleHead span{margin-left:0;flex-basis:100%}.counter{align-self:flex-start}}
+/* Keep worked code examples readable on phones without any document-level or
+   nested horizontal scrollbar; desktop code remains scrollable in its panel. */
+@media(max-width:640px){
+  .example pre{white-space:pre-wrap;overflow-x:hidden;overflow-wrap:anywhere}
+  .example code{white-space:pre-wrap;overflow-wrap:anywhere}
+}
 @media(prefers-reduced-motion:reduce){.track span{transition:none}}
