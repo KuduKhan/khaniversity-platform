@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Clock3, Lightbulb } from "lucide-react";
 import { completeLesson } from "@/modules/enrollments/actions";
 import { Professor } from "./professor";
+import { StudyNotebook } from "./study-notebook";
 import {
   emptyState,
   usePreviewRecord,
@@ -18,11 +19,13 @@ type LessonQuestion = {
 };
 export function Lesson({
   preview,
+  scope,
   initial = emptyState,
   questions,
   approvedMaterial = null,
 }: {
   preview: boolean;
+  scope: string;
   approvedMaterial?: { title: string; body: string; id: number } | null;
   initial?: LearningState;
   questions: LessonQuestion[];
@@ -364,6 +367,7 @@ export function Lesson({
               </div>
             )}
           </section>
+          <StudyNotebook moduleId="computational-thinking" title="Computational thinking" scope={scope} />
           <Professor preview={preview} />
           <div className="next-lesson">
             <span className="eyebrow">NEXT / MODULE 02</span>
