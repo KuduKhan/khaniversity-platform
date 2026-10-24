@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { ArrowRight, BookMarked, Check, Download, NotebookPen, RotateCcw, Trash2 } from "lucide-react";
 import {
   NOTE_LIMIT,
   markNoteReviewed,
-  nextReviewAt,
   parseStudyRecord,
   removeStudyNote,
   studyReviewQueue,
@@ -89,17 +88,48 @@ export function StudyNotebook({
   scope: string;
 }) {
   const { record, ready, update, exportNotes } = useLocalNotebook(scope);
-  const note = record.notes[moduleId];
-  const [text, setText] = useState("");
-  const [confidence, setConfidence] = useState<Confidence>("revisit");
   const [message, setMessage] = useState("");
+  if (!ready) return <section className={styles.notebook} aria-label="Personal notebook loading">
+    <p>Loading saved reflection…</p>
+  </section>;
+  // Remount draft inputs only when the source note actually changes. No
+  // synchronous effect updates or render-time localStorage reads are needed.
+  const version = record.notes[moduleId]?.updatedAt ?? "new";
+  return <StudyNotebookEditor
+    key={scope + ":" + moduleId + ":" + version}
+    moduleId={moduleId}
+    title={title}
+    record={record}
+    update={update}
+    exportNotes={exportNotes}
+    message={message}
+    setMessage={setMessage}
+  />;
+}
+
+function StudyNotebookEditor({
+  moduleId,
+  title,
+  record,
+  update,
+  exportNotes,
+  message,
+  setMessage,
+}: {
+  moduleId: string;
+  title: string;
+  record: StudyRecord;
+  update: (apply: (current: StudyRecord) => StudyRecord) => string | null;
+  exportNotes: () => string | null;
+  message: string;
+  setMessage: (message: string) => void;
+}) {
+  const note = record.notes[moduleId];
+  const ready = true;
+  const [text, setText] = useState(note?.text ?? "");
+  const [confidence, setConfidence] = useState<Confidence>(note?.confidence ?? "revisit");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useEffect(() => {
-    setText(note?.text ?? "");
-    setConfidence(note?.confidence ?? "revisit");
-    setConfirmDelete(false);
-  }, [scope, moduleId, note?.updatedAt]);
 
   function save(event: React.FormEvent) {
     event.preventDefault();
@@ -174,7 +204,7 @@ export function StudyNotebook({
         <div className={styles.saved}>
           <div>
             <strong><BookMarked size={16} aria-hidden="true" /> Saved study reflection</strong>
-            <p>Last saved {new Date(note.updatedAt).toLocaleDateString()} · {nextReviewAt(note) <= Date.now() ? "Ready to review" : "Scheduled for review"}</p>
+            <p>Last saved {new Date(note.updatedAt).toLocaleDateString()} · {note.confidence === "revisit" ? "Priority review" : "Spaced review enabled"}</p>
           </div>
           {confirmDelete ? (
             <div className={styles.deleteActions}>
