@@ -100,7 +100,7 @@ export function Dashboard({
         </Link>
       </nav>
       <StudyReviewPanel scope={scope} preview={preview} modules={courseModules.map((m) => ({ id: m.id, title: m.title }))} />
-      <PracticeProgressPanel scope={scope} preview={preview} />
+      {(preview || state.enrolled) && <PracticeProgressPanel scope={scope} preview={preview} />}
       <section className="welcome-panel">
         <div>
           <span className="tag">COMPUTER SCIENCE ACADEMY</span>
