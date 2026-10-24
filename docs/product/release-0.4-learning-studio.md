@@ -47,6 +47,29 @@ Status: implementation branch / draft pull request, not a completed production r
 7. Do not merge merely because static CI checks pass; review the PR and
    release readiness with an authorized operator.
 
+## Added: guided Practice Studio and StudentOS practice tracker
+
+- Ten module-specific two-checkpoint computational tracing exercises, one for
+  each complete CS101 module, now appear on their lesson pages.
+- Learners can read a worked code example, reveal authored hints, submit their
+  predictions and receive instant deterministic feedback and explanations.
+- The interactive input checker accepts short text or whole numbers; it never
+  evaluates learner text as executable code.
+- Locally saved attempts retain the best checkpoint count and completion date
+  across reloads. Retry does not erase an earlier success.
+- StudentOS shows a ten-activity progress bar and a link to the next unfinished
+  exercise; unfinished attempts are identified as areas to revisit.
+- Storage is namespaced by anonymous preview versus authenticated learner UUID,
+  separately from the earlier notes feature and entirely separately from
+  Supabase official assessments.
+- Practice activities have visible learning outcomes, responsive fields, accessible
+  keyboard interactions, reduced motion and a clear path to Python CodeLab.
+- Unit tests verify all ten author-defined answers, parsing, scoring,
+  invalid data, and namespace separation. Browser tests exercise correct/incorrect
+  feedback, retry, reload persistence, narrow-phone layout and protected routes.
+- These low-stakes exercises are not graded evidence, an executable Python runtime,
+  or official completion requirements.
+
 ## Remaining v0.4 work
 
 - Deepen lesson scaffolding with worked examples, learner practice and
