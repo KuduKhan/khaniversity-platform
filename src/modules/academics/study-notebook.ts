@@ -123,7 +123,7 @@ export function removeStudyNote(current: StudyRecord, moduleId: string): StudyRe
 }
 
 export function nextReviewAt(note: StudyNote): number {
-  const days = note.confidence === "revisit" ? 0 :
+  const days = note.confidence === "revisit" ? (note.reviewedAt ? 1 : 0) :
     note.confidence === "practicing" ? 3 : 14;
   return Date.parse(note.reviewedAt ?? note.updatedAt) + days * 86400000;
 }
