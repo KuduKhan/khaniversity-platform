@@ -41,16 +41,8 @@ export function Dashboard({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const base = preview ? "/preview" : "";
-  const completedModules = courseModules.filter((module, index) =>
-    index === 0
-      ? state.completed
-      : (state.moduleProgress?.[module.id]?.score ?? 0) >= 80,
-  ).length;
-  const nextModule = courseModules.find((module, index) =>
-    index === 0
-      ? !state.completed
-      : (state.moduleProgress?.[module.id]?.score ?? 0) < 80,
-  ) ?? courseModules[courseModules.length - 1];
+  // One authoritative calculation for the pathway, module list and shortcuts.
+  const completedModules = plan.mastered;
   const moduleHref = (id: string) => `${base}/learn/cs101/${id}`;
   async function join() {
     setBusy(true);
@@ -83,9 +75,9 @@ export function Dashboard({
         </div>
       </div>
       <nav className="study-shortcuts" aria-label="Learning workspace shortcuts">
-        <Link href={`${base}/learn/cs101/computational-thinking`}>
+        <Link href={moduleHref(plan.next.id)}>
           <span className="study-shortcut-icon"><BookOpen size={19} aria-hidden /></span>
-          <span><strong>Learning Studio</strong><small>Continue a guided lesson</small></span>
+          <span><strong>Learning Studio</strong><small>{plan.hasFinishedChecks ? "Review your mastered pathway" : `Continue: ${plan.next.title}`}</small></span>
           <ArrowRight size={17} aria-hidden />
         </Link>
         <Link href={`${base}/codelab`}>
@@ -105,23 +97,25 @@ export function Dashboard({
         <div>
           <span className="tag">COMPUTER SCIENCE ACADEMY</span>
           <h2>
-            {state.completed
-              ? "Your foundation is taking shape."
-              : state.enrolled
-                ? "Keep your curiosity moving."
-                : "Your next chapter starts here."}
+            {plan.hasFinishedChecks
+              ? "Your module checks are mastered."
+              : completedModules > 0
+                ? "Your foundation is taking shape."
+                : state.enrolled
+                  ? "Keep your curiosity moving."
+                  : "Your next chapter starts here."}
           </h2>
           <p>
-            {state.completed
-              ? "Your learning is taking shape. Continue through the full CS101 pathway and build your capstone."
+            {plan.hasFinishedChecks
+              ? "All ten module checks are mastered. A course award still requires the applicable capstone review and eligibility checks."
               : "A complete pathway from computational thinking to a tested Personal Study Planner. Pick up at any module and build toward mastery."}
           </p>
           {state.enrolled ? (
             <Link
               className="button gold"
-              href={moduleHref(nextModule.id)}
+              href={moduleHref(plan.next.id)}
             >
-              {completedModules === courseModules.length ? "Review your capstone" : state.completed ? "Continue your pathway" : "Continue learning"}{" "}
+              {plan.hasFinishedChecks ? "Review your capstone" : completedModules > 0 ? "Continue your pathway" : "Continue learning"}{" "}
               <ArrowRight size={17} />
             </Link>
           ) : (
@@ -179,7 +173,7 @@ export function Dashboard({
         </article>
         <article>
           <Target size={20} />
-          <span>Knowledge check</span>
+          <span>First module check</span>
           <strong>{state.score === null ? "—" : `${state.score}%`}</strong>
           <small>
             {state.score === null
@@ -210,23 +204,27 @@ export function Dashboard({
               <span>{completedModules === 10 ? "CS101 pathway mastered" : "Your progress"}</span>
               <strong>{completedModules} / 10 modules mastered</strong>
             </div>
-            <div className="progress-track">
-              <span style={{ width: `${completedModules * 10}%` }} />
+            <div className="progress-track" role="progressbar" aria-label="CS101 course pathway progress"
+              aria-valuemin={0} aria-valuemax={plan.total} aria-valuenow={completedModules}>
+              <span style={{ width: `${plan.percentage}%` }} />
             </div>
             <div className="path-modules-list">
               {courseModules.map((module, index) => {
-                const score = index === 0 ? state.score : state.moduleProgress?.[module.id]?.score;
-                const passed = index === 0 ? state.completed : (score ?? 0) >= 80;
+                const score = index === 0 ? state.score : state.moduleProgress?.[module.id]?.score ?? null;
+                const passed = score !== null && score >= 80;
                 return (
                   <div className="path-module" key={module.id}>
                     <span className="module-number">{String(index + 1).padStart(2, "0")}</span>
                     <div>
                       <small>MODULE {String(index + 1).padStart(2, "0")}{module.project ? " · CAPSTONE" : " · LESSON"}</small>
                       <h3>{module.title}</h3>
-                      <p><Clock3 size={13} /> {module.project ? "90" : index === 0 ? "15" : "35"} min <span>·</span> Lesson + check</p>
+                      <p><Clock3 size={13} aria-hidden="true" /> {module.project ? "90" : index === 0 ? "15" : "35"} min <span>·</span> Lesson + check</p>
+                      <p className={styles.moduleState} data-status={passed ? "mastered" : score !== null ? "review" : "new"}>
+                        {passed ? <><Check size={13} aria-hidden="true" /> Mastered · {score}%</> :
+                          score !== null ? `Needs review · ${score}%` : "Not started"}
+                      </p>
                     </div>
-                    {passed && <span className="module-score"><Check size={14} /> {score ?? 100}%</span>}
-                    <Link className="round-link" aria-label={`Open ${module.title} lesson`} href={moduleHref(module.id)}>
+                    <Link className="round-link" aria-label={`${passed ? "Review" : score !== null ? "Retry" : "Start"} ${module.title} lesson`} href={moduleHref(module.id)}>
                       <ArrowRight size={19} />
                     </Link>
                   </div>
