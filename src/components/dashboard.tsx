@@ -204,7 +204,7 @@ export function Dashboard({
               <span>{completedModules === 10 ? "CS101 pathway mastered" : "Your progress"}</span>
               <strong>{completedModules} / 10 modules mastered</strong>
             </div>
-            <div className="progress-track" role="progressbar" aria-label="CS101 module mastery"
+            <div className="progress-track" role="progressbar" aria-label="CS101 course pathway progress"
               aria-valuemin={0} aria-valuemax={plan.total} aria-valuenow={completedModules}>
               <span style={{ width: `${plan.percentage}%` }} />
             </div>
