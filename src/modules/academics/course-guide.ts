@@ -100,13 +100,13 @@ export const courseStages = [
 export function getModuleGuide(moduleId: string) {
   const index = courseModules.findIndex((module) => module.id === moduleId);
   if (index < 0) return null;
-  const module = courseModules[index];
+  const currentLesson = courseModules[index];
   const stage = courseStages.find((entry) => entry.modules.some((item) => item.id === moduleId));
   const guide = moduleGuide[moduleId];
   if (!stage || !guide) return null;
   return {
     ...guide,
-    module,
+    module: currentLesson,
     index,
     stage,
     prerequisite: index > 0 ? courseModules[index - 1] : null,
