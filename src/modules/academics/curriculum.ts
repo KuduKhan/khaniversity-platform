@@ -22,6 +22,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "A computer needs a clear plan", body: "Computational thinking turns an unclear problem into a solution you can explain, test and repeat. Start by identifying the information available, the transformation required and the result expected.", example: "INPUT: task durations [20, 35, 15]\nPROCESS: add each duration to a total starting at 0\nOUTPUT: 70 minutes" },
       { heading: "Decompose, then test an edge case", body: "Split a larger job into smaller jobs: collect tasks, validate each duration, calculate the total and present the result. Then ask what happens for an empty list, invalid value or unusually large input. Explicit assumptions make an algorithm useful." },
+      { heading: "Design the planner before coding", body: "Write down the task record and expected behavior before opening an editor. In the first version, each task has a title and a duration; the total is a computed result, not an extra value to manually maintain. Check the no-tasks case and decide which invalid inputs the planner should reject.", example: "INPUT: tasks = [{title: \"Read\", minutes: 20}, {title: \"Practice\", minutes: 35}]\nPROCESS: sum the minutes for every task\nOUTPUT: 55\nEDGE CASE: no tasks -> 0" },
     ],
     checks: [
       { prompt: "Which description best defines an algorithm?", options: ["A programming language", "A precise finite sequence of steps", "The physical parts of a computer"], answer: 1, explanation: "An algorithm is a finite, unambiguous sequence of steps, independent of a specific language." },
@@ -36,6 +37,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "Programs are instructions for a runtime", body: "Python reads statements in order. An expression produces a value; a statement performs an action such as assigning a value or displaying text. A syntax error means the instructions cannot be parsed, while a runtime error occurs during execution.", example: "name = \"Amina\"\nprint(\"Welcome,\", name)" },
       { heading: "Make a small change and observe", body: "Start with a working example, change one thing, run it again and compare the output. This loop builds a reliable mental model: edit, execute, inspect and refine. Keep error messages nearby; the final line often points to the failing operation." },
+      { heading: "Trace a small working program", body: "Use a known input, write down your predicted output and then run the code. A change to a variable persists until the next assignment; print shows its value at that moment. This edit-predict-run-explain loop will also help you debug the planner.", example: "minutes = 20\nminutes = minutes + 15\nprint(minutes)  # Predict before running\nprint(\"Tasks can be timed\")" },
     ],
     checks: [
       { prompt: "What does print(value) do?", options: ["Displays a value", "Creates a new variable", "Repeats a statement"], answer: 0, explanation: "print writes a human-readable representation to the output stream." },
@@ -50,6 +52,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "Values have types", body: "An integer represents a whole number, a float a decimal number, a string text, and a Boolean a true-or-false value. Input entered by a person arrives as text, so convert it deliberately and handle values that cannot be converted.", example: "raw_minutes = input(\"Minutes: \")\nminutes = int(raw_minutes)\nprint(minutes * 60, \"seconds\")" },
       { heading: "Validate before using", body: "A useful program defines acceptable ranges and gives a clear response when input falls outside them. For a duration, decide whether zero is allowed, reject negative numbers and avoid silently treating malformed text as a valid value." },
+      { heading: "Validate a duration before storing it", body: "Input conversion and business rules are different steps. First check whether the text can represent an integer; then check that the duration is nonnegative. In the planner, do not silently turn invalid input into a legitimate task.", example: "raw = \"25\"\nminutes = int(raw)\nif minutes < 0:\n    print(\"Duration must not be negative\")\nelse:\n    print(\"Accepted:\", minutes)" },
     ],
     checks: [
       { prompt: "What type does input() return?", options: ["Integer", "String", "Boolean"], answer: 1, explanation: "input returns text; convert it before arithmetic." },
@@ -64,6 +67,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "Choose a path", body: "An if statement runs a block when a condition is true. elif checks another condition and else handles the remaining case. Comparisons produce Boolean values; combine them carefully and make boundary rules explicit.", example: "if minutes < 0:\n    print(\"Duration cannot be negative\")\nelif minutes == 0:\n    print(\"No time scheduled\")\nelse:\n    print(\"Task recorded\")" },
       { heading: "Repeat with a reason", body: "A for loop visits each item in a sequence. A while loop continues while a condition remains true. Every while loop needs a progress rule that eventually makes the condition false; otherwise it can run forever." },
+      { heading: "Choose the right tasks with a condition", body: "For every task, apply the same condition and decide whether it should appear in a result. Walk through the values one by one and check the empty-list behavior before relying on the code.", example: "tasks = [{\"title\": \"Read\", \"done\": False}, {\"title\": \"Test\", \"done\": True}]\nfor task in tasks:\n    if not task[\"done\"]:\n        print(\"Still to do:\", task[\"title\"])" },
     ],
     checks: [
       { prompt: "When does an if block run?", options: ["When its condition is true", "At random", "Only after a loop"], answer: 0, explanation: "The condition controls whether the block executes." },
@@ -78,6 +82,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "Give a task a name", body: "A function packages a focused operation. Parameters describe the inputs; return sends a result back to the caller. Prefer a returned value for computation and keep display or file access at the boundary of the program.", example: "def total_minutes(durations):\n    return sum(durations)\n\nplanned = total_minutes([20, 35, 15])" },
       { heading: "Keep scope understandable", body: "A local variable exists inside the function where it is assigned. Passing data in and returning results out makes dependencies visible and makes functions easier to test than code that relies on hidden global state." },
+      { heading: "Give each planner operation one responsibility", body: "A function should do one clearly defined job. Let data-processing functions return values rather than printing, so they can be reused in the UI, in reports and in tests. Check a normal list and an empty list.", example: "def total_minutes(tasks):\n    return sum(task[\"minutes\"] for task in tasks)\n\nprint(total_minutes([{\"minutes\": 20}, {\"minutes\": 35}]))\nprint(total_minutes([]))" },
     ],
     checks: [
       { prompt: "What does return do?", options: ["Sends a result to the caller", "Prints automatically", "Repeats the function"], answer: 0, explanation: "return ends the function call and provides its result." },
@@ -92,6 +97,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "Choose a collection for the job", body: "A list keeps an ordered, changeable sequence. A tuple is ordered and fixed. A dictionary maps unique keys to values. A set stores distinct values and supports membership and set operations.", example: "tasks = [\"read\", \"practice\"]\nminutes = {\"read\": 20, \"practice\": 35}\nlabels = {\"urgent\", \"review\"}" },
       { heading: "Model records clearly", body: "A dictionary can represent a task with named fields such as title, priority and duration. A list can then hold many records. Validate a key before looking it up and use a default only when the product rule makes that behavior clear." },
+      { heading: "Model a task as data, not unrelated variables", body: "A dictionary stores named fields for one task; a list holds many task dictionaries. A consistent structure keeps later operations predictable. Think about which fields are required and how missing values should be handled.", example: "tasks = [\n    {\"title\": \"Read\", \"minutes\": 20, \"done\": False},\n    {\"title\": \"Review\", \"minutes\": 35, \"done\": True},\n]\nprint(tasks[0][\"title\"])\nprint(len(tasks))" },
     ],
     checks: [
       { prompt: "Which collection maps a task name to its duration?", options: ["Dictionary", "Set", "Tuple only"], answer: 0, explanation: "Dictionaries map keys to values." },
@@ -106,6 +112,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "Persist data deliberately", body: "Files let a program retain information between runs. Use a context manager so files close reliably. Choose a documented format such as JSON for structured records and validate the data after loading it.", example: "import json\nwith open(\"tasks.json\", encoding=\"utf-8\") as file:\n    tasks = json.load(file)" },
       { heading: "Handle expected errors", body: "A file may be missing, unreadable or malformed. Catch a specific expected exception, explain what the user can do and preserve the original error for debugging. Avoid a broad except that hides programming defects." },
+      { heading: "Recover safely from invalid or missing files", body: "A saved planner is useful only if its data can be restored safely. Handle a missing file, inspect the JSON structure, and never let a corrupt record silently replace valid in-memory work. Keep error messages actionable.", example: "import json\npayload = '{\"tasks\": [{\"title\": \"Read\", \"minutes\": 20}]}'\ntry:\n    data = json.loads(payload)\n    print(len(data[\"tasks\"]))\nexcept (ValueError, KeyError, TypeError):\n    print(\"Could not read the saved tasks\")" },
     ],
     checks: [
       { prompt: "Why use with open(...) as file?", options: ["It closes the file reliably", "It encrypts the file", "It skips validation"], answer: 0, explanation: "The context manager handles resource cleanup when the block exits." },
@@ -120,6 +127,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "Reason about growth", body: "An algorithm's complexity describes how resource use changes as input grows. A linear scan may inspect each of n items once, so work grows roughly with n. Nested full scans can grow much faster, around n squared.", example: "# Linear search: inspect at most each item once\nfor task in tasks:\n    if task[\"priority\"] == target:\n        return task" },
       { heading: "Measure the right thing", body: "Big-O is a useful comparison, not a stopwatch prediction. Constant factors, memory, input distribution and the actual workload matter. First make the solution correct and measurable; optimize a demonstrated bottleneck." },
+      { heading: "Explain the cost of a simple search", body: "If the planner examines every task once, the work grows roughly with the number of tasks. Nested scans can grow much faster. Prefer a readable single pass when it solves the problem correctly; optimization comes after evidence.", example: "tasks = [20, 35, 15]\ntotal = 0\nfor minutes in tasks:  # Each task is visited once\n    total += minutes\nprint(total)" },
     ],
     checks: [
       { prompt: "A scan checks each item once. Its growth is commonly…", options: ["Linear O(n)", "Constant O(1) for all sizes", "Exponential O(2ⁿ)"], answer: 0, explanation: "The number of checks grows proportionally with the item count." },
@@ -134,6 +142,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
     sections: [
       { heading: "Make expectations executable", body: "A test gives a known input and checks the behavior that matters. Include typical, boundary and invalid cases. A small test suite catches regressions and records assumptions that prose alone can leave ambiguous.", example: "assert total_minutes([20, 35, 15]) == 70\nassert total_minutes([]) == 0" },
       { heading: "Track changes with Git", body: "Git records snapshots so you can inspect, compare and restore work. Make focused commits with clear messages. Review a diff before sharing it and keep secrets and generated learner data out of source control." },
+      { heading: "Turn expected behavior into automated checks", body: "A test records a promise about program behavior. Begin with a typical example, then add empty and boundary cases. A readable assertion helps a future maintainer recognize a regression when the planner changes.", example: "def total_minutes(values):\n    return sum(values)\n\nassert total_minutes([20, 35]) == 55\nassert total_minutes([]) == 0\nassert total_minutes([0]) == 0" },
     ],
     checks: [
       { prompt: "What should a test assert?", options: ["Expected behavior for a defined input", "The author's preferred editor", "That no one changes the code"], answer: 0, explanation: "Tests encode observable behavior." },
@@ -150,6 +159,7 @@ const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
       { heading: "Build for a real learner", body: "Create a program that records study tasks, assigns priorities, persists progress and generates useful summaries. Begin with a short design: users, task fields, rules, supported commands and error cases.", example: "Task: {title, minutes, priority, done}\nRequired: add task, list tasks, mark complete, summarize time" },
       { heading: "Demonstrate quality, not just features", body: "Your evidence should include a working program, representative tests, clear input validation, a data model, readable functions and a short explanation of a design decision. The rubric rewards correctness and reasoning; it does not reward hidden or unreviewed AI output." },
       { heading: "Review the capstone rubric", body: "Feature completeness (25%), input handling (15%), data organization (15%), test coverage (20%), code readability (15%) and explanation of decisions (10%). Keep a draft, run the tests and revise after reading the feedback." },
+      { heading: "Integrate features and show reviewable evidence", body: "Bring the task model, validation, calculations, persistence and tests together. Save a draft and explain one design choice and its trade-off. Official completion still depends on the authorized review process rather than local checks or tutor feedback.", example: "def summarize(tasks):\n    return {\n        \"count\": len(tasks),\n        \"minutes\": sum(task[\"minutes\"] for task in tasks),\n    }\n\nassert summarize([]) == {\"count\": 0, \"minutes\": 0}" },
     ],
     checks: [
       { prompt: "Which is a required capstone behavior?", options: ["Persist tasks and generate summaries", "Hide all validation", "Depend on a single hard-coded task"], answer: 0, explanation: "The project is expected to record tasks and generate useful summaries." },
