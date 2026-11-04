@@ -223,10 +223,12 @@ export function CodeLab({ preview = true, accountId, savedSubmissions = [] }: { 
     };
   }, [boot]);
   function run(tests: boolean) {
+    if (busy || !status.includes("ready")) return;
     if (code.length > 6000) {
       setOutput("Keep your solution under 6,000 characters.");
       return;
     }
+    if (timer.current) clearTimeout(timer.current);
     setBusy(true);
     setOutput("");
     worker.current?.postMessage({ type: "run", code, tests });
@@ -281,7 +283,7 @@ export function CodeLab({ preview = true, accountId, savedSubmissions = [] }: { 
               total number of minutes. Consider an empty list.
             </p>
           </div>
-          <span className="system-status">{status}</span>
+          <span className="system-status" role="status">{status}</span>
         </div>
         <textarea
           aria-label="Python editor"
@@ -294,13 +296,13 @@ export function CodeLab({ preview = true, accountId, savedSubmissions = [] }: { 
         <div className="tool-actions">
           <button
             className="button outline"
-            disabled={busy}
+            disabled={busy || !status.includes("ready")}
             onClick={() => run(false)}
           >
             Run code
           </button>
           <button className="button outline" type="button" onClick={exportPython}>Export .py draft</button>
-          <button className="text-button" type="button" onClick={resetDraft}>Reset local draft</button>
+          <button className="text-button" type="button" disabled={busy || submissionBusy} onClick={resetDraft}>Reset local draft</button>
           {!preview && <button className="button outline" type="button" disabled={submissionBusy||busy||code.trim().length<10} onClick={submitAccountCode}>
             {submissionBusy ? "Submitting…" : "Submit solution to account"}
           </button>}
@@ -312,7 +314,7 @@ export function CodeLab({ preview = true, accountId, savedSubmissions = [] }: { 
             {busy ? "Running checks…" : "Run challenge checks"}
           </button>
         </div>
-        <pre className="code-output" aria-live="polite">
+        <pre className="code-output" aria-label="Python execution output" aria-live="polite">
           {output ||
             "Output will appear here. Challenge checks cover typical, empty, and single-item inputs."}
         </pre>
