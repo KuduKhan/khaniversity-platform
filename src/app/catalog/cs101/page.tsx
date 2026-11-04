@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PublicHeader, Footer } from "@/components/brand";
-import { courseModules } from "@/modules/academics/curriculum";
+import { courseOutline as courseModules } from "@/modules/academics/course-outline";
 const lessonPath = [
   "computational-thinking",
   ...courseModules.slice(1).map((module) => module.id),
