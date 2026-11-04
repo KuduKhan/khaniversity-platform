@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { BookOpen, ArrowRight, CheckCircle2, Clock3, ClipboardCheck, GraduationCap } from "lucide-react";
-import { course } from "@/modules/academics/catalog";
-import { courseModules } from "@/modules/academics/curriculum";
+import { courseInfo as course } from "@/modules/academics/course-outline";
+import { courseOutline as courseModules } from "@/modules/academics/course-outline";
 import { courseStages, estimatedCourseMinutes, getModuleGuide } from "@/modules/academics/course-guide";
 import { buildLearningPlan } from "@/modules/academics/learning-plan";
 import { emptyState, usePreviewRecord, type LearningState } from "./preview-store";
