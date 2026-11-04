@@ -56,7 +56,7 @@ export function Professor({ moduleId = "computational-thinking", moduleTitle = "
         Ask for a hint, an example, or a step-by-step explanation. Your chat
         stays in this tab; avoid sharing personal information.
       </p>
-      <div className="professor-chat" aria-live="polite">
+      <div className="professor-chat" role="log" aria-label="Lesson tutor conversation" aria-live="polite" aria-relevant="additions" aria-busy={busy}>
         {messages.length ? (
           messages.map((m, i) => (
             <div
@@ -118,8 +118,9 @@ export function Professor({ moduleId = "computational-thinking", moduleTitle = "
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="What would you like to understand?"
+          rows={3}
         />
-        <button className="button gold" disabled={busy || !prompt.trim()}>
+        <button type="submit" className="button gold" disabled={busy || !prompt.trim()}>
           {busy ? "Asking…" : "Ask"}
         </button>
       </form> : <p className="fine-print">Live AI tutoring requires a signed-in CS101 student account. The lesson guides above remain available without an account.</p>}

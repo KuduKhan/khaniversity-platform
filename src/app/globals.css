@@ -1,8 +1,4 @@
 @import "tailwindcss";
-.mobile-signout { display: none; }
-@media (max-width: 640px) {
-  .mobile-signout { display: block; }
-}
 :root {
   --navy: #112c35;
   --deep: #0e2630;
@@ -2751,7 +2747,6 @@ footer > span {
   .roadmap-module > div { min-width: 0; flex: 1; }
   .roadmap-module .tag { margin-left: 52px; }
   .path-modules-list .path-module { gap: 9px; }
-  .module-score { display: none; }
   .lesson-page .back {
     margin-bottom: 25px;
   }
@@ -4352,40 +4347,6 @@ body > footer {
 
 /* Mobile reflow: keep navigation and process steps visible without side-scrolling. */
 @media (max-width: 640px) {
-  .sidebar nav {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 3px;
-    overflow: visible;
-    overscroll-behavior: auto;
-    scrollbar-width: auto;
-    padding: 6px 8px 8px;
-    margin: 10px -16px 0;
-  }
-  .sidebar nav a {
-    display: flex;
-    min-width: 0;
-    max-width: none;
-    min-height: 48px;
-    flex: initial;
-    flex-direction: column;
-    gap: 3px;
-    padding: 6px 3px;
-    font-size: 8px;
-    line-height: 1.2;
-    white-space: normal;
-    text-align: center;
-    overflow-wrap: anywhere;
-    border-radius: 8px;
-  }
-  .sidebar nav a[aria-current="page"] {
-    box-shadow: inset 0 -2px var(--gold);
-  }
-  .sidebar nav a > svg {
-    width: 14px;
-    height: 14px;
-  }
-  .sidebar nav a > svg:last-child:not(:first-child) { display: none; }
   .systems-journey {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4723,7 +4684,8 @@ body > footer.site-footer .footer-achievements p { margin-top: 8px; font-size: 1
   .workspace-header-actions .workspace-menu-toggle[aria-expanded="true"] { background: var(--green); border-color: var(--green); }
   .workspace-header-actions a:focus-visible, .workspace-header-actions button:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
   .navigation-open .workspace-navigation { margin: 8px -10px -8px; padding: 0 12px 12px; background: var(--deep); color: #e5eadd; max-height: calc(100dvh - 74px); }
-  .sidebar .workspace-navigation > nav > .catalog-nav-link, .navigation-open .sidebar-bottom form, .preview-banner > a { display: none; }
+  /* One mobile account action is available in the masthead. */
+  .navigation-open .sidebar-bottom form { display: none; }
   .workspace-header { min-height: 39px; padding: 8px 16px; }
   .preview-banner { padding: 7px 16px; }
 }

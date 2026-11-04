@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Save } from "lucide-react";
 import { completeModule, saveCapstoneDraft, submitCapstoneForReview } from "@/modules/enrollments/actions";
 import type { LearnerModule } from "@/modules/academics/transport";
+import { courseModules } from "@/modules/academics/curriculum";
 import { savePreview, usePreviewRecord } from "./preview-store";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
@@ -105,10 +106,9 @@ export function CourseModule({
     } finally { setSending(false); }
   }
 
-  const moduleIndex = module.id === "computational-thinking"
-    ? 0
-    : ["programming-fundamentals", "variables-data-input-output", "conditions-loops", "functions-scope", "collections", "files-exceptions-debugging", "algorithms-complexity", "testing-git-quality", "personal-study-planner-capstone"].indexOf(module.id) + 1;
-  const nextModule = moduleIndex >= 0 ? (moduleIndex < 9 ? ["programming-fundamentals", "variables-data-input-output", "conditions-loops", "functions-scope", "collections", "files-exceptions-debugging", "algorithms-complexity", "testing-git-quality", "personal-study-planner-capstone"][moduleIndex] : undefined) : undefined;
+  // Curriculum order is owned by one registry, not an error-prone manual list.
+  const moduleIndex = courseModules.findIndex((item) => item.id === module.id);
+  const nextModule = moduleIndex >= 0 ? courseModules[moduleIndex + 1]?.id : undefined;
   const moduleUrl = (id: string) => `${preview ? "/preview" : ""}/learn/cs101/${id}`;
 
   return (
@@ -117,7 +117,7 @@ export function CourseModule({
         <ArrowLeft size={15} /> Back to your learning path
       </Link>
       <header className="module-hero">
-        <p className="eyebrow">CS101 · MODULE {String(moduleIndex + 1).padStart(2, "0")} OF 10</p>
+        <p className="eyebrow">CS101 · MODULE {String(moduleIndex + 1).padStart(2, "0")} OF {courseModules.length}</p>
         <h1>{module.title}</h1>
         <p className="lead">{module.description}</p>
         <div className="module-outcome"><Check size={17} /> <span><strong>By the end, you can</strong> {module.outcome}</span></div>
@@ -186,7 +186,9 @@ export function CourseModule({
           <p role="alert" className="save-error">{error}</p>
         </form>
         {score !== null && <div className={`result ${score >= 80 ? "passed" : ""}`} role="status"><h3>{score}% · {score >= 80 ? "Module mastered" : "Practice and try again"}</h3><p>{score >= 80 ? "Your best result is recorded. Continue to the next module when ready." : "Review the explanations and retry. Your best result is kept."}</p></div>}
-        {nextModule && <Link className="button" href={moduleUrl(nextModule)}>Continue to the next module <ArrowRight size={17} /></Link>}
+        {nextModule && <Link className="button outline" href={moduleUrl(nextModule)}>
+          {score !== null && score >= 80 ? "Continue to next module" : "Explore next module"} <ArrowRight size={17} aria-hidden="true" />
+        </Link>}
         {module.project && <p className="fine-print">Course completion also requires a passing capstone review. A quiz score alone is not a certificate.</p>}
       </section>
       <StudyNotebook moduleId={module.id} title={module.title} scope={scope} />

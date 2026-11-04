@@ -20,3 +20,22 @@
 @media (min-width:681px) and (max-width:1050px) {
   .plan { grid-template-columns:minmax(0,1fr); }
 }
+
+/* Keep mastery, retry and unstarted states visible on small screens.
+   The legacy global stylesheet hides .module-score below 640px, so the
+   explanatory status lives next to the module title, not in a badge. */
+:global(.path-module) .moduleState {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin: .35rem 0 0;
+  font-size: .76rem;
+  line-height: 1.45;
+  font-weight: 650;
+  color: #5f726c;
+  overflow-wrap: anywhere;
+}
+:global(.path-module) .moduleState[data-status="mastered"] { color: #2d634d; }
+:global(.path-module) .moduleState[data-status="review"] { color: #895a21; }
+:global(.path-module) .moduleState[data-status="new"] { color: #586c68; }
