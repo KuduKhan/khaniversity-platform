@@ -8,7 +8,7 @@ test("CS101 learner hub connects discovery, syllabus, practice, mastery and evid
     "Discover a course", "Understand the syllabus", "Learn", "Practice",
     "Demonstrate mastery", "Complete the capstone", "Review academic evidence",
   ]) {
-    await expect(page.getByRole("link", { name: new RegExp(label) })).toHaveCount(1);
+    await expect(page.locator("ol").first().getByRole("link", { name: new RegExp(label) })).toHaveCount(1);
   }
   await expect(page.getByRole("heading", { name: "Four learning stages, one connected project" })).toBeVisible();
   for (const stage of [
