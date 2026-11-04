@@ -518,3 +518,53 @@ button:disabled { cursor: not-allowed; opacity: .62; }
   .hero-art .art-caption-icon { width: 28px; height: 28px; }
   .hero-art .art-caption-icon > svg { width: 18px; height: 18px; }
 }
+
+
+/* Premium Experience: one restrained component contract across existing surfaces. */
+:root {
+  --ui-card-radius: 16px;
+  --ui-control-radius: 11px;
+  --ui-control-height: 44px;
+  --ui-card-shadow: 0 7px 26px rgba(16, 42, 42, .055);
+  --ui-motion: 180ms ease;
+}
+:where(.tool-panel, .path-card, .stats article, .catalog-card,
+  .system-card, .review-card, .auth-card, .module-reading,
+  .module-project, .module-check, .study-shortcuts > a) {
+  border-radius: var(--ui-card-radius);
+}
+:where(.button, .round-link, .public-menu-toggle, .workspace-menu-toggle,
+  .workspace-account-shortcut) {
+  min-height: var(--ui-control-height);
+  border-radius: var(--ui-control-radius);
+}
+:where(.tool-page, .course-module-page, .dashboard, .operations-page) {
+  min-inline-size: 0;
+}
+:where(.tool-panel, .module-project, .module-check, .module-reading) :where(input, textarea, select) {
+  max-width: 100%;
+  min-width: 0;
+}
+:where(button, a, input, textarea, select, summary):focus-visible {
+  outline: 3px solid #b68b37;
+  outline-offset: 3px;
+}
+.workspace-nav-caption {
+  display: block;
+  padding: 15px 12px 6px;
+  color: #b6c5b9;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: .12em;
+  font-weight: 800;
+}
+.workspace-nav-caption:first-child { padding-top: 0; }
+.study-shortcuts small { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) {
+  :where(button, a, input, textarea, .system-card, .stats article,
+    .study-shortcuts > a, .progress-track > span, .planProgress > span) {
+    animation-duration: .01ms;
+    transition-duration: .01ms;
+    scroll-behavior: auto;
+  }
+}
