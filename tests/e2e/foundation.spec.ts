@@ -393,7 +393,9 @@ test("mobile workspace menu is compact, keyboard accessible and closes on naviga
   await toggle.click();
   await expect(navigation).toBeVisible();
   await expect(page.getByRole("button", { name: "Close navigation menu" })).toHaveAttribute("aria-expanded", "true");
-  await expect(navigation.getByRole("link")).toHaveCount(6);
+  // The academic catalog is now available in the readable mobile menu.
+  await expect(navigation.getByRole("link")).toHaveCount(7);
+  await expect(navigation.getByRole("link", { name: "Academic catalog" })).toBeVisible();
   await page.screenshot({ path: "artifacts/mobile-menu-open-320.png", fullPage: true });
   await page.keyboard.press("Escape");
   await expect(toggle).toBeFocused();
