@@ -74,25 +74,6 @@ export function Dashboard({
           <p>Small steps. Clear understanding. Lasting progress.</p>
         </div>
       </div>
-      <nav className="study-shortcuts" aria-label="Learning workspace shortcuts">
-        <Link href={moduleHref(plan.next.id)}>
-          <span className="study-shortcut-icon"><BookOpen size={19} aria-hidden /></span>
-          <span><strong>Learning Studio</strong><small>{plan.hasFinishedChecks ? "Review your mastered pathway" : `Continue: ${plan.next.title}`}</small></span>
-          <ArrowRight size={17} aria-hidden />
-        </Link>
-        <Link href={`${base}/codelab`}>
-          <span className="study-shortcut-icon"><Code2 size={19} aria-hidden /></span>
-          <span><strong>Python CodeLab</strong><small>Write, run and refine</small></span>
-          <ArrowRight size={17} aria-hidden />
-        </Link>
-        <Link href={`${base}/passport`}>
-          <span className="study-shortcut-icon"><Award size={19} aria-hidden /></span>
-          <span><strong>Skills Passport</strong><small>Review learning evidence</small></span>
-          <ArrowRight size={17} aria-hidden />
-        </Link>
-      </nav>
-      <StudyReviewPanel scope={scope} preview={preview} modules={courseModules.map((m) => ({ id: m.id, title: m.title }))} />
-      {(preview || state.enrolled) && <PracticeProgressPanel scope={scope} preview={preview} />}
       <section className="welcome-panel">
         <div>
           <span className="tag">COMPUTER SCIENCE ACADEMY</span>
@@ -148,7 +129,6 @@ export function Dashboard({
             <small>{plan.mastered} of {plan.total} module checks mastered · {plan.percentage}%</small>
           </div>
           <div className={styles.planActions}>
-            <Link className="button gold" href={moduleHref(plan.next.id)}>Open next lesson <ArrowRight size={16}/></Link>
             <Link className="button outline" href={`${base}/codelab`}>Practice in Python CodeLab</Link>
             <Link className="text-link" href={`${base}/path`}>Explore your adaptive learning path →</Link>
           </div>
@@ -184,6 +164,23 @@ export function Dashboard({
           </small>
         </article>
       </div>
+      <nav className="study-shortcuts" aria-label="Learning workspace shortcuts">
+        <Link href={moduleHref(plan.next.id)}>
+          <span className="study-shortcut-icon"><BookOpen size={19} aria-hidden /></span>
+          <span><strong>Learning Studio</strong><small>{plan.hasFinishedChecks ? "Review your mastered pathway" : `Continue: ${plan.next.title}`}</small></span>
+          <ArrowRight size={17} aria-hidden />
+        </Link>
+        <Link href={`${base}/codelab`}>
+          <span className="study-shortcut-icon"><Code2 size={19} aria-hidden /></span>
+          <span><strong>Python CodeLab</strong><small>Write, run and refine</small></span>
+          <ArrowRight size={17} aria-hidden />
+        </Link>
+        <Link href={`${base}/passport`}>
+          <span className="study-shortcut-icon"><Award size={19} aria-hidden /></span>
+          <span><strong>Skills Passport</strong><small>Review learning evidence</small></span>
+          <ArrowRight size={17} aria-hidden />
+        </Link>
+      </nav>
       <div className="dashboard-columns">
         <section className="learning-path">
           <div className="section-heading">
@@ -247,6 +244,9 @@ export function Dashboard({
           </div>
         </aside>
       </div>
+
+      <StudyReviewPanel scope={scope} preview={preview} modules={courseModules.map((m) => ({ id: m.id, title: m.title }))} />
+      {(preview || state.enrolled) && <PracticeProgressPanel scope={scope} preview={preview} />}
       <div className="workspace-footer">
         LEARN. BUILD. INNOVATE. MASTER.
         <span>KHANIVERSITY · VIRTUAL UNIVERSITY</span>
