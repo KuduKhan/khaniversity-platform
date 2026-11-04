@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { GraduationCap, LayoutDashboard, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Brand } from "./brand";
 
 export function WorkspaceNavigation({
@@ -50,14 +50,6 @@ export function WorkspaceNavigation({
           className="workspace-header-actions"
           aria-label="Workspace shortcuts"
         >
-          <Link
-            href="/catalog"
-            className="workspace-academy-shortcut"
-            aria-label="Explore the academy"
-            title="Explore the academy"
-          >
-            <GraduationCap size={16} aria-hidden />
-          </Link>
           <button
             ref={toggle}
             type="button"
@@ -65,12 +57,13 @@ export function WorkspaceNavigation({
             aria-expanded={open}
             aria-controls="workspace-navigation"
             aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+            title={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen(!open)}
           >
             {open ? (
               <X size={16} aria-hidden />
             ) : (
-              <LayoutDashboard size={16} aria-hidden />
+              <Menu size={19} aria-hidden />
             )}
           </button>
           {preview ? (
