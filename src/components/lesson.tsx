@@ -25,10 +25,12 @@ export function Lesson({
   initial = emptyState,
   questions,
   approvedMaterial = null,
+  appliedExample = null,
 }: {
   preview: boolean;
   scope: string;
   approvedMaterial?: { title: string; body: string; id: number } | null;
+  appliedExample?: { heading: string; body: string; example?: string } | null;
   initial?: LearningState;
   questions: LessonQuestion[];
 }) {
@@ -276,6 +278,12 @@ export function Lesson({
               assumptions is part of building a useful algorithm.
             </p>
           </section>
+          {appliedExample && <section className="module-reading" aria-label="Applied project example">
+            <span className="eyebrow">FROM THIS LESSON TO YOUR CAPSTONE</span>
+            <h2>{appliedExample.heading}</h2>
+            <p>{appliedExample.body}</p>
+            {appliedExample.example && <pre><code>{appliedExample.example}</code></pre>}
+          </section>}
           <section id="practice">
             <span className="eyebrow">03 / YOUR TURN</span>
             <h2>Make the thinking your own.</h2>
