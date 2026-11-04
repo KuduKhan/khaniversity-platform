@@ -12,7 +12,7 @@ import {
   Award,
   Braces,
 } from "lucide-react";
-import { courseModules } from "@/modules/academics/curriculum";
+import { courseOutline as courseModules } from "@/modules/academics/course-outline";
 import { buildLearningPlan } from "@/modules/academics/learning-plan";
 import styles from "./studentos.module.css";
 import { StudyReviewPanel } from "./study-notebook";
