@@ -21,9 +21,13 @@ test("StudentOS resumes the earliest incomplete lesson and explains module state
   await page.reload();
 
   const shortcut = page.getByRole("navigation", { name: "Learning workspace shortcuts" })
-    .getByRole("link", { name: /Learning Studio/ });
-  await expect(shortcut).toHaveAttribute("href", "/preview/learn/cs101/programming-fundamentals");
-  await expect(shortcut).toContainText("Continue: Programming fundamentals");
+    .getByRole("link", { name: /My Learning/ });
+  await expect(shortcut).toHaveAttribute("href", "/preview/learn/cs101");
+  await shortcut.click();
+  await expect(page).toHaveURL(/\/preview\/learn\/cs101$/);
+  await expect(page.getByRole("link", { name: "Continue my next module" })).toHaveAttribute("href", "/preview/learn/cs101/programming-fundamentals");
+  await page.goto("/preview/dashboard");
+  await expect(shortcut).toContainText("CS101 syllabus");
   await expect(page.getByRole("progressbar", { name: "CS101 course pathway progress" }))
     .toHaveAttribute("aria-valuenow", "1");
 
@@ -57,8 +61,10 @@ test("StudentOS continuation advances only after a mastery threshold is met", as
   }, previewKey);
   await page.reload();
   await expect(page.getByRole("navigation", { name: "Learning workspace shortcuts" })
-    .getByRole("link", { name: /Learning Studio/ }))
-    .toHaveAttribute("href", "/preview/learn/cs101/variables-data-input-output");
+    .getByRole("link", { name: /My Learning/ }))
+    .toHaveAttribute("href", "/preview/learn/cs101");
+  await page.goto("/preview/learn/cs101");
+  await expect(page.getByRole("link", { name: "Continue my next module" })).toHaveAttribute("href", "/preview/learn/cs101/variables-data-input-output");
   await expect(page.getByRole("progressbar", { name: "CS101 course pathway progress" }))
     .toHaveAttribute("aria-valuenow", "2");
   await page.goto("/dashboard");
