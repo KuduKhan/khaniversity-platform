@@ -1,4 +1,4 @@
-import { courseModules } from "./curriculum";
+import { courseOutline as courseModules } from "./course-outline";
 
 /**
  * CS101 publication metadata. Titles, ids, order and teaching outcomes stay in
