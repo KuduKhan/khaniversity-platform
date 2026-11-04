@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Save } from "lucide-react";
 import { completeModule, saveCapstoneDraft, submitCapstoneForReview } from "@/modules/enrollments/actions";
 import type { LearnerModule } from "@/modules/academics/transport";
-import { courseModules } from "@/modules/academics/curriculum";
+import { courseOutline as courseModules } from "@/modules/academics/course-outline";
 import { savePreview, usePreviewRecord } from "./preview-store";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
