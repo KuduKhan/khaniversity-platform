@@ -65,7 +65,7 @@ export function CourseOverview({
             </div>
             <small>{preview ? "This progress is stored only on this device, not in an academic account." : "Module mastery is not an issued qualification; capstone assessment and eligibility checks remain separate."}</small>
           </div>
-        ) : <p role="status">Loading this browser's learning progress…</p>}
+        ) : <p role="status">Loading local learning progress…</p>}
       </header>
 
       <section className={styles.journey} aria-labelledby="learner-journey-heading">
