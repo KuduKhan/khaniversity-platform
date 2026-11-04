@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { WorkspaceNavigation } from "./workspace-navigation";
 import {
   LayoutDashboard,
@@ -75,7 +76,7 @@ export function StudentShell({
       <WorkspaceNavigation preview={preview}>
         <nav aria-label="Student navigation">
           {navigationGroups.map((group) => group.links.length > 0 && (
-            <div key={group.label} className="workspace-nav-group">
+            <Fragment key={group.label}>
               <span className="workspace-nav-caption" aria-hidden="true">{group.label}</span>
               {group.links.map(({ key, label, href, icon: Icon }) => (
                 <Link
@@ -87,7 +88,7 @@ export function StudentShell({
                   <Icon size={18} aria-hidden="true" /> {label}
                 </Link>
               ))}
-            </div>
+            </Fragment>
           ))}
           {!preview && staff && (
             <div className="nav-group" role="group" aria-label="Administration">
