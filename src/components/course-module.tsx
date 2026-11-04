@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Check, Save } from "lucide-react";
 import { completeModule, saveCapstoneDraft, submitCapstoneForReview } from "@/modules/enrollments/actions";
 import type { LearnerModule } from "@/modules/academics/transport";
 import { courseOutline as courseModules } from "@/modules/academics/course-outline";
+import { getModuleGuide } from "@/modules/academics/course-guide";
 import { savePreview, usePreviewRecord } from "./preview-store";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
@@ -109,21 +110,28 @@ export function CourseModule({
   // Curriculum order is owned by one registry, not an error-prone manual list.
   const moduleIndex = courseModules.findIndex((item) => item.id === module.id);
   const nextModule = moduleIndex >= 0 ? courseModules[moduleIndex + 1]?.id : undefined;
+  const guide = getModuleGuide(module.id);
   const moduleUrl = (id: string) => `${preview ? "/preview" : ""}/learn/cs101/${id}`;
 
   return (
     <div className="course-module-page">
-      <Link className="back" href={`${preview ? "/preview" : ""}/dashboard`}>
-        <ArrowLeft size={15} /> Back to your learning path
+      <Link className="back" href={`${preview ? "/preview" : ""}/learn/cs101`}>
+        <ArrowLeft size={15} /> Back to your syllabus
       </Link>
       <header className="module-hero">
-        <p className="eyebrow">CS101 · MODULE {String(moduleIndex + 1).padStart(2, "0")} OF {courseModules.length}</p>
+        <p className="eyebrow">{guide?.stage.title ?? "CS101"} · MODULE {String(moduleIndex + 1).padStart(2, "0")} OF {courseModules.length}</p>
         <h1>{module.title}</h1>
         <p className="lead">{module.description}</p>
         <div className="module-outcome"><Check size={17} /> <span><strong>By the end, you can</strong> {module.outcome}</span></div>
         {existing !== null && <span className="tag">BEST CHECK · {existing}%</span>}
       </header>
 
+      {guide && <section className="lesson-orientation" aria-label="Lesson orientation">
+        <div><strong>Plan your learning</strong><span>Approx. {guide.studyMinutes} minutes · {guide.prerequisite ? `Builds on ${guide.prerequisite.title}` : "Beginner entry"}</span></div>
+        <div><strong>Practice focus</strong><span>{guide.practiceFocus}</span></div>
+        <div><strong>Capstone connection</strong><span>{guide.capstoneConnection}</span></div>
+        <nav aria-label="Module activities"><a href={`#practice-studio-${module.id}`}>Guided practice</a><a href="#check">Knowledge check</a></nav>
+      </section>}
       {approvedMaterial && <section className="module-reading" aria-label="Faculty-reviewed lesson material">
         <span className="eyebrow">FACULTY APPROVED · ADDITIONAL TEACHING MATERIAL #{approvedMaterial.id}</span>
         <h2>{approvedMaterial.title}</h2>
