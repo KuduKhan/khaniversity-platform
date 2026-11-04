@@ -14,6 +14,7 @@ import {
   type PracticeRecord,
 } from "@/modules/academics/practice-studio";
 import styles from "./practice-studio.module.css";
+import { courseModules } from "@/modules/academics/curriculum";
 
 const changed = "khaniversity-practice-changed";
 
@@ -170,6 +171,7 @@ export function PracticeStudio({
 export function PracticeProgressPanel({ scope, preview }: { scope: string; preview: boolean }) {
   const { ready, record } = usePracticeRecord(scope);
   const summary = practiceSummary(record);
+  const nextModule = courseModules.find((module) => module.id === summary.next.moduleId);
   const base = preview ? "/preview" : "";
   return (
     <section className={styles.dashboardPanel} aria-labelledby="studentos-practice-title">
@@ -188,7 +190,8 @@ export function PracticeProgressPanel({ scope, preview }: { scope: string; previ
         <div className={styles.dashboardBottom}>
           <div>
             <strong>{summary.passed === summary.total ? "Revisit any lesson" : "Next practice activity"}</strong>
-            <p>{summary.next.title}</p>
+            <p>{nextModule?.title ?? summary.next.title}</p>
+            <small>Exercise: {summary.next.title}</small>
             <small>{summary.attempted} attempted · {summary.passed} finished · {summary.revisit.length} to revisit</small>
           </div>
           <Link className="button outline" href={base + "/learn/cs101/" + summary.next.moduleId + "#practice-studio-" + summary.next.moduleId}>
