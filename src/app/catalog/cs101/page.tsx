@@ -18,7 +18,7 @@ export default function Course() {
           <Link className="button" href="/preview/learn/cs101/computational-thinking">Start learning CS101 <ArrowRight size={17} aria-hidden="true" /></Link>
           <Link className="text-link" href="/preview/learn/cs101">Open guided syllabus <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
-        <p className="notice">CS101 is a ten-module pilot course. Local preview exercises are formative and remain on the device; official evidence and any course award require an enrolled account and eligibility review. KHANIVERSITY does not award accredited degrees.</p>
+        <p className="notice">CS101 is a ten-module pilot course. Local preview exercises are formative and remain on the device; official evidence and any course award require an enrolled account and eligibility review. KHANIVERSITY does not award an accredited degree.</p>
         <section className={styles.journey} aria-label="CS101 overview">
           <div className={styles.sectionHead}>
             <p className="eyebrow">ACADEMIC OVERVIEW</p>
