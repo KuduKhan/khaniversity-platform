@@ -1,4 +1,4 @@
-import { modules } from "./catalog";
+import { courseOutline } from "./course-outline";
 
 export type ModuleCheck = {
   prompt: string;
@@ -16,10 +16,9 @@ export type ModuleLesson = {
   project?: boolean;
 };
 
-const lessons: Omit<ModuleLesson, "title" | "description">[] = [
+const lessons: Omit<ModuleLesson, "title" | "description" | "outcome">[] = [
   {
     id: "computational-thinking",
-    outcome: "Describe a computing problem as inputs, processing and outputs; decompose it into testable steps.",
     sections: [
       { heading: "A computer needs a clear plan", body: "Computational thinking turns an unclear problem into a solution you can explain, test and repeat. Start by identifying the information available, the transformation required and the result expected.", example: "INPUT: task durations [20, 35, 15]\nPROCESS: add each duration to a total starting at 0\nOUTPUT: 70 minutes" },
       { heading: "Decompose, then test an edge case", body: "Split a larger job into smaller jobs: collect tasks, validate each duration, calculate the total and present the result. Then ask what happens for an empty list, invalid value or unusually large input. Explicit assumptions make an algorithm useful." },
@@ -34,7 +33,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "programming-fundamentals",
-    outcome: "Run a Python program, recognize statements and expressions, and explain how execution proceeds.",
     sections: [
       { heading: "Programs are instructions for a runtime", body: "Python reads statements in order. An expression produces a value; a statement performs an action such as assigning a value or displaying text. A syntax error means the instructions cannot be parsed, while a runtime error occurs during execution.", example: "name = \"Amina\"\nprint(\"Welcome,\", name)" },
       { heading: "Make a small change and observe", body: "Start with a working example, change one thing, run it again and compare the output. This loop builds a reliable mental model: edit, execute, inspect and refine. Keep error messages nearby; the final line often points to the failing operation." },
@@ -49,7 +47,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "variables-data-input-output",
-    outcome: "Choose appropriate data types, validate user input and transform values without losing meaning.",
     sections: [
       { heading: "Values have types", body: "An integer represents a whole number, a float a decimal number, a string text, and a Boolean a true-or-false value. Input entered by a person arrives as text, so convert it deliberately and handle values that cannot be converted.", example: "raw_minutes = input(\"Minutes: \")\nminutes = int(raw_minutes)\nprint(minutes * 60, \"seconds\")" },
       { heading: "Validate before using", body: "A useful program defines acceptable ranges and gives a clear response when input falls outside them. For a duration, decide whether zero is allowed, reject negative numbers and avoid silently treating malformed text as a valid value." },
@@ -64,7 +61,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "conditions-loops",
-    outcome: "Use conditions and loops to express decisions and repetition with clear stop conditions.",
     sections: [
       { heading: "Choose a path", body: "An if statement runs a block when a condition is true. elif checks another condition and else handles the remaining case. Comparisons produce Boolean values; combine them carefully and make boundary rules explicit.", example: "if minutes < 0:\n    print(\"Duration cannot be negative\")\nelif minutes == 0:\n    print(\"No time scheduled\")\nelse:\n    print(\"Task recorded\")" },
       { heading: "Repeat with a reason", body: "A for loop visits each item in a sequence. A while loop continues while a condition remains true. Every while loop needs a progress rule that eventually makes the condition false; otherwise it can run forever." },
@@ -79,7 +75,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "functions-scope",
-    outcome: "Write reusable functions with parameters, return values and a clear responsibility.",
     sections: [
       { heading: "Give a task a name", body: "A function packages a focused operation. Parameters describe the inputs; return sends a result back to the caller. Prefer a returned value for computation and keep display or file access at the boundary of the program.", example: "def total_minutes(durations):\n    return sum(durations)\n\nplanned = total_minutes([20, 35, 15])" },
       { heading: "Keep scope understandable", body: "A local variable exists inside the function where it is assigned. Passing data in and returning results out makes dependencies visible and makes functions easier to test than code that relies on hidden global state." },
@@ -94,7 +89,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "collections",
-    outcome: "Select lists, tuples, dictionaries and sets to match common data-access needs.",
     sections: [
       { heading: "Choose a collection for the job", body: "A list keeps an ordered, changeable sequence. A tuple is ordered and fixed. A dictionary maps unique keys to values. A set stores distinct values and supports membership and set operations.", example: "tasks = [\"read\", \"practice\"]\nminutes = {\"read\": 20, \"practice\": 35}\nlabels = {\"urgent\", \"review\"}" },
       { heading: "Model records clearly", body: "A dictionary can represent a task with named fields such as title, priority and duration. A list can then hold many records. Validate a key before looking it up and use a default only when the product rule makes that behavior clear." },
@@ -109,7 +103,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "files-exceptions-debugging",
-    outcome: "Read and write structured files safely and handle expected failures with useful messages.",
     sections: [
       { heading: "Persist data deliberately", body: "Files let a program retain information between runs. Use a context manager so files close reliably. Choose a documented format such as JSON for structured records and validate the data after loading it.", example: "import json\nwith open(\"tasks.json\", encoding=\"utf-8\") as file:\n    tasks = json.load(file)" },
       { heading: "Handle expected errors", body: "A file may be missing, unreadable or malformed. Catch a specific expected exception, explain what the user can do and preserve the original error for debugging. Avoid a broad except that hides programming defects." },
@@ -124,7 +117,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "algorithms-complexity",
-    outcome: "Compare a straightforward search and explain how work grows as input size increases.",
     sections: [
       { heading: "Reason about growth", body: "An algorithm's complexity describes how resource use changes as input grows. A linear scan may inspect each of n items once, so work grows roughly with n. Nested full scans can grow much faster, around n squared.", example: "# Linear search: inspect at most each item once\nfor task in tasks:\n    if task[\"priority\"] == target:\n        return task" },
       { heading: "Measure the right thing", body: "Big-O is a useful comparison, not a stopwatch prediction. Constant factors, memory, input distribution and the actual workload matter. First make the solution correct and measurable; optimize a demonstrated bottleneck." },
@@ -139,7 +131,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "testing-git-quality",
-    outcome: "Write behavior-focused tests and use version control to make changes reviewable.",
     sections: [
       { heading: "Make expectations executable", body: "A test gives a known input and checks the behavior that matters. Include typical, boundary and invalid cases. A small test suite catches regressions and records assumptions that prose alone can leave ambiguous.", example: "assert total_minutes([20, 35, 15]) == 70\nassert total_minutes([]) == 0" },
       { heading: "Track changes with Git", body: "Git records snapshots so you can inspect, compare and restore work. Make focused commits with clear messages. Review a diff before sharing it and keep secrets and generated learner data out of source control." },
@@ -154,7 +145,6 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
   },
   {
     id: "personal-study-planner-capstone",
-    outcome: "Design, implement, test and explain a data-driven study planner with validation and persistence.",
     project: true,
     sections: [
       { heading: "Build for a real learner", body: "Create a program that records study tasks, assigns priorities, persists progress and generates useful summaries. Begin with a short design: users, task fields, rules, supported commands and error cases.", example: "Task: {title, minutes, priority, done}\nRequired: add task, list tasks, mark complete, summarize time" },
@@ -173,8 +163,9 @@ const lessons: Omit<ModuleLesson, "title" | "description">[] = [
 
 export const courseModules: ModuleLesson[] = lessons.map((lesson, index) => ({
   ...lesson,
-  title: modules[index][0],
-  description: modules[index][1],
+  title: courseOutline[index].title,
+  description: courseOutline[index].description,
+  outcome: courseOutline[index].outcome,
 }));
 
 export const getCourseModule = (id: string) =>
