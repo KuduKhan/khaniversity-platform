@@ -162,7 +162,8 @@ test("responsive pages fit at phone, tablet and desktop widths", async ({
           Array.from(document.querySelectorAll("body *"))
             .filter((element) => {
               const style = getComputedStyle(element);
-              return (
+              // Code samples may scroll inside their own panel; the document must not.
+              return element.tagName.toLowerCase() !== "pre" && (
                 ["auto", "scroll"].includes(style.overflowX) &&
                 element.scrollWidth > element.clientWidth + 1
               );
