@@ -65,7 +65,7 @@ test("StudentOS continuation advances only after a mastery threshold is met", as
     .toHaveAttribute("href", "/preview/learn/cs101");
   await page.goto("/preview/learn/cs101");
   await expect(page.getByRole("link", { name: "Continue my next module" })).toHaveAttribute("href", "/preview/learn/cs101/variables-data-input-output");
-  await expect(page.getByRole("progressbar", { name: "CS101 course pathway progress" }))
+  await expect(page.getByRole("progressbar", { name: "CS101 module mastery" }))
     .toHaveAttribute("aria-valuenow", "2");
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/signin$/);
