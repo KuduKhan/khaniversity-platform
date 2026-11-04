@@ -2,6 +2,7 @@ import { StudentShell } from "@/components/student-shell";
 import { Lesson } from "@/components/lesson";
 import { studentState } from "@/modules/enrollments/state";
 import { questions } from "@/modules/academics/catalog";
+import { getCourseModule } from "@/modules/academics/curriculum";
 import { latestApprovedMaterial } from "@/modules/curriculum/published";
 export const dynamic = "force-dynamic";
 export default async function StudentLesson() {
@@ -9,7 +10,7 @@ export default async function StudentLesson() {
   const approvedMaterial = await latestApprovedMaterial("computational-thinking");
   return (
     <StudentShell preview={false} active="lesson" email={email}>
-      <Lesson preview={false} scope={id} initial={state} approvedMaterial={approvedMaterial} questions={questions.map(({ prompt, options, explanation }) => ({ prompt, options, explanation }))} />
+      <Lesson preview={false} scope={id} initial={state} approvedMaterial={approvedMaterial} questions={questions.map(({ prompt, options, explanation }) => ({ prompt, options, explanation }))} appliedExample={getCourseModule("computational-thinking")?.sections[2]} />
     </StudentShell>
   );
 }
