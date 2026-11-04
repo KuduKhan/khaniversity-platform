@@ -19,7 +19,7 @@ test("CS101 learner hub connects discovery, syllabus, practice, mastery and evid
   }
   await expect(page.getByRole("progressbar", { name: "CS101 module mastery" })).toHaveAttribute("aria-valuenow", "0");
   await expect(page.getByText("This progress is stored only on this device", { exact: false })).toBeVisible();
-  await page.getByRole("link", { name: /Module 02: Programming fundamentals/ }).click();
+  await page.getByRole("link", { name: /Module 2: Programming fundamentals/ }).click();
   await expect(page.getByRole("heading", { name: "Programming fundamentals & Python" })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Module activities" }).getByRole("link", { name: "Guided practice" })).toHaveAttribute("href", "#practice-studio-programming-fundamentals");
   await page.getByRole("link", { name: "Back to your syllabus" }).click();
