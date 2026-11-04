@@ -212,3 +212,81 @@
   .principles > p { display: grid; align-items: center; min-height: 36px; margin: 0; font-size: 13px; line-height: 1.45; text-wrap: balance; }
   .auth-card input, .auth-card textarea, .auth-card select { font-size: 16px; }
 }
+
+
+/* Premium Experience: readable mobile workspace navigation.
+   Do not collapse academic destinations into 8px four-column icon labels. */
+@media (max-width: 640px) {
+  .student-shell .sidebar .workspace-navigation > nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3px;
+    margin: 0;
+    padding: 11px 0 15px;
+    overflow: visible;
+  }
+  .student-shell .sidebar .workspace-navigation > nav > a {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    min-height: 45px;
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+    white-space: normal;
+    border-radius: 10px;
+  }
+  .student-shell .sidebar .workspace-navigation > nav > a > svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+  }
+  .student-shell .sidebar .workspace-navigation > nav > .catalog-nav-link { display: flex; }
+  .student-shell .sidebar .workspace-navigation .workspace-nav-caption {
+    grid-column: 1 / -1;
+    font-size: 10px;
+    padding: 14px 12px 6px;
+    margin: 0;
+    color: #c1d5c9;
+  }
+  .student-shell .sidebar.navigation-open .workspace-navigation {
+    max-height: calc(100dvh - 75px);
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+  .student-shell .sidebar .workspace-header-actions .workspace-menu-toggle {
+    min-width: 44px;
+    width: 44px;
+    min-height: 44px;
+  }
+  .student-shell .sidebar .workspace-header-actions .workspace-account-shortcut {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .student-shell .sidebar .sidebar-header .brand-name { font-size: clamp(11px, 3vw, 14px); }
+  .student-shell .sidebar .sidebar-header .brand .brand-wordmark small {
+    font-size: 7px;
+  }
+  .student-shell .workspace-header { padding-block: 11px; }
+  .student-shell .preview-banner { font-size: 12px; line-height: 1.5; }
+  .study-shortcuts > a { min-height: 60px; }
+  .module-score { display: inline-flex; }
+  .path-module { align-items: flex-start; }
+  .path-module .round-link { min-width: 44px; min-height: 44px; flex: 0 0 44px; }
+  .dashboard .page-heading h1 { font-size: clamp(28px, 8vw, 36px); }
+  .hero .hero-note { font-size: 11px; }
+}
+@media (max-width: 370px) {
+  .student-shell .sidebar .sidebar-header .brand .brand-wordmark small {
+    white-space: normal;
+    flex-wrap: wrap;
+    line-height: 1.2;
+  }
+  .student-shell .sidebar .workspace-header-actions { gap: 4px; }
+  .student-shell .sidebar .workspace-header-actions .workspace-account-shortcut { padding-inline: 6px; }
+}
