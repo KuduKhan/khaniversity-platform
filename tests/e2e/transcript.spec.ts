@@ -10,6 +10,6 @@ test("private academic record requires a real signed-in account", async ({ page 
 
 test("academic record is not advertised as verified in the public course catalog", async ({ page }) => {
   await page.goto("/catalog/cs101");
-  await expect(page.getByRole("heading", {level:1})).toContainText("Big ideas.");
+  await expect(page.getByRole("heading", {level:1})).toContainText("Learn Python. Build the thinking behind it.");
   await expect(page.getByText("does not award an accredited degree", {exact:false})).toBeVisible();
 });

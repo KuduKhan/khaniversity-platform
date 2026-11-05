@@ -14,7 +14,7 @@ import {
   type PracticeRecord,
 } from "@/modules/academics/practice-studio";
 import styles from "./practice-studio.module.css";
-import { courseModules } from "@/modules/academics/curriculum";
+import { courseOutline as courseModules } from "@/modules/academics/course-outline";
 
 const changed = "khaniversity-practice-changed";
 

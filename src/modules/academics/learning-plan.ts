@@ -1,4 +1,4 @@
-import { courseModules } from "./curriculum";
+import { courseOutline as courseModules } from "./course-outline";
 
 export type ProgressForPlan = {
   completed: boolean;

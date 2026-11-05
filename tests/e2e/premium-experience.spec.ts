@@ -12,7 +12,7 @@ test("StudentOS retains one readable mobile menu with all existing destinations"
   const navigation = page.getByRole("navigation", { name: "Student navigation" });
   await expect(navigation).toBeVisible();
   for (const destination of [
-    "Overview", "Learning Studio", "Adaptive path", "Python CodeLab",
+    "Home", "My Learning", "Adaptive path", "Python CodeLab",
     "Tech labs", "Skills Passport", "Academic catalog",
   ]) {
     await expect(navigation.getByRole("link", { name: destination, exact: true })).toHaveCount(1);

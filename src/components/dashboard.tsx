@@ -12,7 +12,7 @@ import {
   Award,
   Braces,
 } from "lucide-react";
-import { courseModules } from "@/modules/academics/curriculum";
+import { courseOutline as courseModules } from "@/modules/academics/course-outline";
 import { buildLearningPlan } from "@/modules/academics/learning-plan";
 import styles from "./studentos.module.css";
 import { StudyReviewPanel } from "./study-notebook";
@@ -165,9 +165,9 @@ export function Dashboard({
         </article>
       </div>
       <nav className="study-shortcuts" aria-label="Learning workspace shortcuts">
-        <Link href={moduleHref(plan.next.id)}>
+        <Link href={`${base}/learn/cs101`}>
           <span className="study-shortcut-icon"><BookOpen size={19} aria-hidden /></span>
-          <span><strong>Learning Studio</strong><small>{plan.hasFinishedChecks ? "Review your mastered pathway" : `Continue: ${plan.next.title}`}</small></span>
+          <span><strong>My Learning</strong><small>CS101 syllabus, progress and every lesson</small></span>
           <ArrowRight size={17} aria-hidden />
         </Link>
         <Link href={`${base}/codelab`}>
@@ -182,7 +182,7 @@ export function Dashboard({
         </Link>
       </nav>
       <div className="dashboard-columns">
-        <section className="learning-path">
+        <section className="learning-path" id="cs101-syllabus">
           <div className="section-heading">
             <h2>Your learning path</h2>
             <span className="muted">CS101</span>
@@ -238,8 +238,8 @@ export function Dashboard({
               You don’t need to know everything to begin. You just need a place
               to start.
             </p>
-            <Link href="/catalog/cs101">
-              View the complete CS101 pathway <ArrowUpRight size={16} />
+            <Link href={`${base}/learn/cs101`}>
+              View your complete CS101 syllabus <ArrowUpRight size={16} />
             </Link>
           </div>
         </aside>

@@ -24,7 +24,7 @@ test("catalog, enrollment, remediation and persisted lesson completion", async (
   await page.getByRole("link", { name: "Learning workspace", exact: true }).click();
   await expect(page).toHaveURL(/\/preview\/dashboard$/);
   const navigation = page.getByRole("navigation", { name: "Student navigation" });
-  for (const name of ["Overview", "Learning Studio", "Adaptive path", "Academic catalog", "Python CodeLab", "Tech labs", "Skills Passport"])
+  for (const name of ["Home", "My Learning", "Adaptive path", "Academic catalog", "Python CodeLab", "Tech labs", "Skills Passport"])
     await expect(navigation.getByRole("link", { name, exact: true })).toHaveCount(1);
   await expect(navigation.getByRole("group")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Learning systems", exact: true })).toHaveCount(0);
@@ -79,7 +79,7 @@ test("protected student routes do not accept preview state", async ({
   await expect(page).toHaveURL(/\/signin$/);
   await page.goto("/learn/cs101/computational-thinking");
   await expect(page).toHaveURL(/\/signin$/);
-  for (const path of ["/path", "/codelab", "/labs", "/passport", "/community", "/admin"]) {
+  for (const path of ["/learn/cs101", "/path", "/codelab", "/labs", "/passport", "/community", "/admin"]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/signin$/);
   }
@@ -162,7 +162,8 @@ test("responsive pages fit at phone, tablet and desktop widths", async ({
           Array.from(document.querySelectorAll("body *"))
             .filter((element) => {
               const style = getComputedStyle(element);
-              return (
+              // Code samples may scroll inside their own panel; the document must not.
+              return element.tagName.toLowerCase() !== "pre" && (
                 ["auto", "scroll"].includes(style.overflowX) &&
                 element.scrollWidth > element.clientWidth + 1
               );
@@ -464,7 +465,7 @@ test("premium StudentOS keeps its primary study actions accessible at mobile siz
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/preview/dashboard");
   const shortcuts = page.getByRole("navigation", { name: "Learning workspace shortcuts" });
-  for (const link of ["Learning Studio", "Python CodeLab", "Skills Passport"])
+  for (const link of ["My Learning", "Python CodeLab", "Skills Passport"])
     await expect(shortcuts.getByRole("link", { name: new RegExp(link) })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await shortcuts.getByRole("link", { name: /Python CodeLab/ }).click();

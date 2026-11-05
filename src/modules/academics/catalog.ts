@@ -1,44 +1,8 @@
-export const course = {
-  id: "cs101",
-  title: "Introduction to Computer Science & Python",
-  program: "Computer Science Foundations",
-  school: "School of Computer Science",
-  version: "0.1.0",
-  lessonId: "computational-thinking",
-};
-export const modules = [
-  [
-    "Computer systems & computational thinking",
-    "Turn a problem into a clear sequence of steps.",
-  ],
-  [
-    "Programming fundamentals & Python",
-    "Write and execute your first Python script.",
-  ],
-  [
-    "Variables, data types & input/output",
-    "Represent and transform information.",
-  ],
-  [
-    "Conditions, loops & control flow",
-    "Make decisions and repeat useful work.",
-  ],
-  [
-    "Functions, scope & decomposition",
-    "Break complex work into reusable functions.",
-  ],
-  [
-    "Lists, tuples, dictionaries & sets",
-    "Choose structures that fit your data.",
-  ],
-  ["Files, exceptions & debugging", "Find faults and handle common failures."],
-  ["Algorithms & complexity", "Compare solutions and their efficiency."],
-  ["Testing, Git & code quality", "Verify behavior and track your work."],
-  [
-    "Capstone: Personal Study Planner",
-    "Build, test and explain a practical program.",
-  ],
-] as const;
+import { courseInfo, courseOutline } from "./course-outline";
+
+export const course = courseInfo;
+export const modules = courseOutline.map(({ title, description }) => [title, description] as const);
+
 export const questions = [
   {
     prompt: "Which description best defines an algorithm?",

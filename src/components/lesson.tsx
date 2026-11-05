@@ -6,6 +6,7 @@ import { completeLesson } from "@/modules/enrollments/actions";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
 import { PracticeStudio } from "./practice-studio";
+import { getModuleGuide } from "@/modules/academics/course-guide";
 import {
   emptyState,
   usePreviewRecord,
@@ -24,10 +25,12 @@ export function Lesson({
   initial = emptyState,
   questions,
   approvedMaterial = null,
+  appliedExample = null,
 }: {
   preview: boolean;
   scope: string;
   approvedMaterial?: { title: string; body: string; id: number } | null;
+  appliedExample?: { heading: string; body: string; example?: string } | null;
   initial?: LearningState;
   questions: LessonQuestion[];
 }) {
@@ -43,6 +46,7 @@ export function Lesson({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const base = preview ? "/preview" : "";
+  const guide = getModuleGuide("computational-thinking");
   async function submit() {
     setBusy(true);
     setError("");
@@ -115,8 +119,8 @@ export function Lesson({
     );
   return (
     <div className="lesson-page">
-      <Link className="back" href={`${base}/dashboard`}>
-        <ArrowLeft size={15} /> Back to overview
+      <Link className="back" href={`${base}/learn/cs101`}>
+        <ArrowLeft size={15} /> Back to your syllabus
       </Link>
       <div className="lesson-layout">
         <aside className="lesson-outline">
@@ -161,7 +165,7 @@ export function Lesson({
           </p>
           <div className="lesson-meta">
             <span>
-              <Clock3 size={15} /> 15 minute lesson
+              <Clock3 size={15} /> Approx. {guide?.studyMinutes ?? 25} minutes, including practice
             </span>
             <span>Reading + practice</span>
             {state.completed && (
@@ -170,6 +174,11 @@ export function Lesson({
               </span>
             )}
           </div>
+          {guide && <section className="lesson-orientation" aria-label="Lesson orientation">
+            <div><strong>Stage 01 · Computing Foundations</strong><span>No programming prerequisites · Start here</span></div>
+            <div><strong>Practice focus</strong><span>{guide.practiceFocus}</span></div>
+            <div><strong>Capstone connection</strong><span>{guide.capstoneConnection}</span></div>
+          </section>}
           {approvedMaterial && <section className="module-reading" aria-label="Faculty reviewed lesson material">
             <span className="eyebrow">FACULTY APPROVED · TEACHING SUPPLEMENT #{approvedMaterial.id}</span>
             <h2>{approvedMaterial.title}</h2>
@@ -269,6 +278,12 @@ export function Lesson({
               assumptions is part of building a useful algorithm.
             </p>
           </section>
+          {appliedExample && <section className="module-reading" aria-label="Applied project example">
+            <span className="eyebrow">FROM THIS LESSON TO YOUR CAPSTONE</span>
+            <h2>{appliedExample.heading}</h2>
+            <p>{appliedExample.body}</p>
+            {appliedExample.example && <pre><code>{appliedExample.example}</code></pre>}
+          </section>}
           <section id="practice">
             <span className="eyebrow">03 / YOUR TURN</span>
             <h2>Make the thinking your own.</h2>
