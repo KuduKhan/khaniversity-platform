@@ -187,13 +187,13 @@ export function CourseModule({
                   {option}
                 </label>
               ))}
-              {score !== null && <p className="answer-feedback">{preview ? answers[i] === question.answer ? "✓ Correct. " : "Review: " : "Explanation: "}{question.explanation}</p>}
+              {preview && score !== null && <p className="answer-feedback">{answers[i] === question.answer ? "✓ Correct. " : "Review: "}{question.explanation}</p>}
             </fieldset>
           ))}
           <button className="button gold" disabled={busy || answers.some((answer) => answer < 0)}>{busy ? "Saving result…" : "Submit knowledge check"} <ArrowRight size={17} /></button>
           <p role="alert" className="save-error">{error}</p>
         </form>
-        {score !== null && <div className={`result ${score >= 80 ? "passed" : ""}`} role="status"><h3>{score}% · {score >= 80 ? "Module mastered" : "Practice and try again"}</h3><p>{score >= 80 ? "Your best result is recorded. Continue to the next module when ready." : "Review the explanations and retry. Your best result is kept."}</p></div>}
+        {score !== null && <div className={`result ${score >= 80 ? "passed" : ""}`} role="status"><h3>{score}% · {score >= 80 ? "Module mastered" : "Practice and try again"}</h3><p>{score >= 80 ? "Your best result is recorded. Continue to the next module when ready." : "Revisit this lesson and its guided practice before retrying. Your best result is kept."}</p></div>}
         {nextModule && <Link className="button outline" href={moduleUrl(nextModule)}>
           {score !== null && score >= 80 ? "Continue to next module" : "Explore next module"} <ArrowRight size={17} aria-hidden="true" />
         </Link>}
