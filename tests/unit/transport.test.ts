@@ -14,8 +14,10 @@ test("account-facing CS101 lesson props omit formative answer keys", () => {
   assert.equal(learner.checks.length, 5);
   for (const check of learner.checks) {
     assert.equal(Object.hasOwn(check, "answer"), false);
+    assert.equal(Object.hasOwn(check, "explanation"), false, "client props must not reveal answer-revealing explanations");
     assert.equal(check.options.length, 3);
   }
+  assert.equal(typeof lessonModule.checks[0].explanation, "string", "server curriculum retains teaching feedback");
   assert.equal(typeof lessonModule.checks[0].answer, "number",
     "local preview curriculum must not be mutated");
 });
