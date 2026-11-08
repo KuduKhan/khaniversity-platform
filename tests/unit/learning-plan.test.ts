@@ -32,3 +32,37 @@ test("mastering all checks never implies a verified credential", () => {
   assert.equal(plan.hasFinishedChecks, true);
   assert.equal(plan.next.id, "personal-study-planner-capstone");
 });
+
+test("dashboard and syllabus derive the same canonical module mastery and retry decision", () => {
+  const plan = buildLearningPlan({
+    completed: true,
+    score: 100,
+    moduleProgress: {
+      "programming-fundamentals": { score: 60, completedAt: "2026-11-06T00:00:00Z" },
+    },
+  });
+  assert.equal(plan.checkpoints[0].status, "mastered");
+  assert.equal(plan.checkpoints[1].status, "needs-review");
+  assert.equal(plan.checkpoints[2].status, "not-started");
+  assert.equal(plan.next.id, "programming-fundamentals");
+  assert.equal(plan.nextAction.kind, "retry");
+  assert.equal(plan.nextAction.href, plan.nextHref);
+  assert.equal(plan.nextAction.heading, "Build confidence with a focused retry");
+});
+
+test("malformed or out-of-range local values cannot produce false mastery", () => {
+  const plan = buildLearningPlan({
+    completed: true,
+    score: Number.NaN,
+    moduleProgress: {
+      "programming-fundamentals": { score: 150, completedAt: "" },
+      "variables-data-input-output": { score: 80, completedAt: "" },
+    },
+  });
+  assert.equal(plan.checkpoints[0].score, null);
+  assert.equal(plan.checkpoints[1].status, "not-started");
+  assert.equal(plan.checkpoints[2].status, "mastered");
+  assert.equal(plan.mastered, 1);
+  assert.equal(plan.next.id, "computational-thinking");
+  assert.equal(plan.hasFinishedChecks, false);
+});
