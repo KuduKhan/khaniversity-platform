@@ -10,6 +10,7 @@ import { savePreview, usePreviewRecord } from "./preview-store";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
 import { PracticeStudio } from "./practice-studio";
+import { LessonOrientation } from "./lesson-orientation";
 
 export function CourseModule({
   module,
@@ -141,12 +142,7 @@ export function CourseModule({
         {existing !== null && <span className="tag">BEST CHECK · {existing}%</span>}
       </header>
 
-      {guide && <section className="lesson-orientation" aria-label="Lesson orientation">
-        <div><strong>Plan your learning</strong><span>Approx. {guide.studyMinutes} minutes · {guide.prerequisite ? `Builds on ${guide.prerequisite.title}` : "Beginner entry"}</span></div>
-        <div><strong>Practice focus</strong><span>{guide.practiceFocus}</span></div>
-        <div><strong>Capstone connection</strong><span>{guide.capstoneConnection}</span></div>
-        <nav aria-label="Module activities"><a href={`#practice-studio-${module.id}`}>Guided practice</a><a href="#check">Knowledge check</a></nav>
-      </section>}
+      <LessonOrientation moduleId={module.id} />
       {approvedMaterial && <section className="module-reading" aria-label="Faculty-reviewed lesson material">
         <span className="eyebrow">FACULTY APPROVED · ADDITIONAL TEACHING MATERIAL #{approvedMaterial.id}</span>
         <h2>{approvedMaterial.title}</h2>
