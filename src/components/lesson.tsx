@@ -16,7 +16,7 @@ import {
 type LessonQuestion = {
   prompt: string;
   options: readonly string[];
-  explanation: string;
+  explanation?: string;
   answer?: number;
 };
 export function Lesson({
@@ -346,11 +346,9 @@ export function Lesson({
                       {option}
                     </label>
                   ))}
-                  {result && (
+                  {preview && result && q.explanation && (
                     <p className="answer-feedback">
-                      {preview
-                        ? answers[i] === q.answer ? "✓ Correct. " : "Review: "
-                        : "Explanation: "}
+                      {answers[i] === q.answer ? "✓ Correct. " : "Review: "}
                       {q.explanation}
                     </p>
                   )}
@@ -378,7 +376,7 @@ export function Lesson({
                 <p>
                   {result.passed
                     ? "Your progress is saved. Continue with Programming fundamentals & Python."
-                    : "Review the explanations above and try again when you’re ready. Your highest score is kept."}
+                    : "Review the lesson and guided practice, then retry. Your highest score is kept."}
                 </p>
                 <Link className="text-link" href={`${base}/dashboard`}>
                   Return to your overview <ArrowRight size={17} />
