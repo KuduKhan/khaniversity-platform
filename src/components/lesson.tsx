@@ -6,6 +6,7 @@ import { completeLesson } from "@/modules/enrollments/actions";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
 import { PracticeStudio } from "./practice-studio";
+import { LessonOrientation } from "./lesson-orientation";
 import { getModuleGuide } from "@/modules/academics/course-guide";
 import {
   emptyState,
@@ -174,11 +175,7 @@ export function Lesson({
               </span>
             )}
           </div>
-          {guide && <section className="lesson-orientation" aria-label="Lesson orientation">
-            <div><strong>Stage 01 · Computing Foundations</strong><span>No programming prerequisites · Start here</span></div>
-            <div><strong>Practice focus</strong><span>{guide.practiceFocus}</span></div>
-            <div><strong>Capstone connection</strong><span>{guide.capstoneConnection}</span></div>
-          </section>}
+          <LessonOrientation moduleId="computational-thinking" />
           {approvedMaterial && <section className="module-reading" aria-label="Faculty reviewed lesson material">
             <span className="eyebrow">FACULTY APPROVED · TEACHING SUPPLEMENT #{approvedMaterial.id}</span>
             <h2>{approvedMaterial.title}</h2>
