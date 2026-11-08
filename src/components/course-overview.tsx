@@ -106,8 +106,9 @@ export function CourseOverview({
               {stage.modules.map((module) => {
                 const guide = getModuleGuide(module.id);
                 if (!guide) return null;
-                const score = guide.index === 0 ? state.score : state.moduleProgress?.[module.id]?.score ?? null;
-                const mastered = score !== null && score >= 80;
+                const checkpoint = plan.checkpoints[guide.index];
+                const score = checkpoint.score;
+                const mastered = checkpoint.status === "mastered";
                 return (
                   <li key={module.id}>
                     <Link href={linkFor(module.id)} aria-label={`Module ${guide.index + 1}: ${module.title}`}>
