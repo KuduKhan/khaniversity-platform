@@ -121,7 +121,7 @@ export function Dashboard({
         <section className={styles.plan} aria-label="Your next steps">
           <div className={styles.planIntro}>
             <span className="eyebrow">STUDENTOS · YOUR NEXT BEST STEP</span>
-            <h2>{plan.hasFinishedChecks ? "Prepare your capstone review" : plan.next.score !== null && plan.next.score < 80 ? "Build confidence with a focused retry" : "Continue where you left off"}</h2>
+            <h2>{plan.nextAction.heading}</h2>
             <p>{plan.next.title}</p>
             <div className={styles.planProgress} role="progressbar" aria-label="CS101 module mastery" aria-valuemin={0} aria-valuemax={plan.total} aria-valuenow={plan.mastered}>
               <span style={{ width: `${plan.percentage}%` }} />
@@ -207,8 +207,9 @@ export function Dashboard({
             </div>
             <div className="path-modules-list">
               {courseModules.map((module, index) => {
-                const score = index === 0 ? state.score : state.moduleProgress?.[module.id]?.score ?? null;
-                const passed = score !== null && score >= 80;
+                const checkpoint = plan.checkpoints[index];
+                const score = checkpoint.score;
+                const passed = checkpoint.status === "mastered";
                 return (
                   <div className="path-module" key={module.id}>
                     <span className="module-number">{String(index + 1).padStart(2, "0")}</span>
@@ -216,7 +217,7 @@ export function Dashboard({
                       <small>MODULE {String(index + 1).padStart(2, "0")}{module.project ? " · CAPSTONE" : " · LESSON"}</small>
                       <h3>{module.title}</h3>
                       <p><Clock3 size={13} aria-hidden="true" /> {module.project ? "90" : index === 0 ? "15" : "35"} min <span>·</span> Lesson + check</p>
-                      <p className={styles.moduleState} data-status={passed ? "mastered" : score !== null ? "review" : "new"}>
+                      <p className={styles.moduleState} data-status={checkpoint.status === "mastered" ? "mastered" : checkpoint.status === "needs-review" ? "review" : "new"}>
                         {passed ? <><Check size={13} aria-hidden="true" /> Mastered · {score}%</> :
                           score !== null ? `Needs review · ${score}%` : "Not started"}
                       </p>
