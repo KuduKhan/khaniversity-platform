@@ -10,6 +10,7 @@ import { savePreview, usePreviewRecord } from "./preview-store";
 import { Professor } from "./professor";
 import { StudyNotebook } from "./study-notebook";
 import { PracticeStudio } from "./practice-studio";
+import { LessonOrientation } from "./lesson-orientation";
 
 export function CourseModule({
   module,
@@ -45,6 +46,7 @@ export function CourseModule({
   const [draftMessage, setDraftMessage] = useState("");
   const [submission, setSubmission] = useState(initialSubmission);
   const [sending, setSending] = useState(false);
+  const [draftSaving, setDraftSaving] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -80,19 +82,33 @@ export function CourseModule({
   }
 
   async function saveDraft() {
+    if (draftSaving || sending) return;
     const nextDraft = { ...draft, updatedAt: new Date().toISOString() };
-    setDraftOverride(nextDraft);
-    if (preview) {
-      savePreview({ ...state, projectDraft: nextDraft });
-      setDraftMessage("Draft saved on this device.");
-    } else {
-      const result = await saveCapstoneDraft(nextDraft);
-      setDraftMessage(result.error ?? "Private project draft saved to your account.");
+    setDraftSaving(true);
+    setDraftMessage("");
+    try {
+      if (preview) {
+        savePreview({ ...state, projectDraft: nextDraft });
+        setDraftOverride(nextDraft);
+        setDraftMessage("Draft saved on this device.");
+      } else {
+        const result = await saveCapstoneDraft(nextDraft);
+        if (result.error) {
+          setDraftMessage(result.error);
+          return;
+        }
+        setDraftOverride(nextDraft);
+        setDraftMessage("Private project draft saved to your account.");
+      }
+    } catch {
+      setDraftMessage("Draft could not be saved. Your edits are still here; retry before leaving.");
+    } finally {
+      setDraftSaving(false);
     }
   }
 
   async function submitForReview() {
-    if (preview || sending) return;
+    if (preview || sending || draftSaving) return;
     setSending(true);
     setDraftMessage("");
     try {
@@ -126,12 +142,7 @@ export function CourseModule({
         {existing !== null && <span className="tag">BEST CHECK · {existing}%</span>}
       </header>
 
-      {guide && <section className="lesson-orientation" aria-label="Lesson orientation">
-        <div><strong>Plan your learning</strong><span>Approx. {guide.studyMinutes} minutes · {guide.prerequisite ? `Builds on ${guide.prerequisite.title}` : "Beginner entry"}</span></div>
-        <div><strong>Practice focus</strong><span>{guide.practiceFocus}</span></div>
-        <div><strong>Capstone connection</strong><span>{guide.capstoneConnection}</span></div>
-        <nav aria-label="Module activities"><a href={`#practice-studio-${module.id}`}>Guided practice</a><a href="#check">Knowledge check</a></nav>
-      </section>}
+      <LessonOrientation moduleId={module.id} />
       {approvedMaterial && <section className="module-reading" aria-label="Faculty-reviewed lesson material">
         <span className="eyebrow">FACULTY APPROVED · ADDITIONAL TEACHING MATERIAL #{approvedMaterial.id}</span>
         <h2>{approvedMaterial.title}</h2>
@@ -152,12 +163,12 @@ export function CourseModule({
           <p className="eyebrow">PROFESSIONAL PROJECT · CAPSTONE</p>
           <h2 id="capstone-title">Build your Personal Study Planner</h2>
           <p>Keep an editable project draft as you build in Python CodeLab. A local draft is private to this browser; an assessed submission must be made from a connected student account and reviewed against the published rubric.</p>
-          <label>Project name<input value={draft.title} onChange={(e) => setDraftOverride({ ...draft, title: e.target.value })} maxLength={100} /></label>
-          <label>Python draft<textarea className="project-editor" value={draft.code} onChange={(e) => setDraftOverride({ ...draft, code: e.target.value.slice(0, 20000) })} spellCheck={false} /></label>
-          <label>Explain one design decision<textarea value={draft.reflection} onChange={(e) => setDraftOverride({ ...draft, reflection: e.target.value.slice(0, 3000) })} maxLength={3000} rows={4} /></label>
-          <button className="button outline" type="button" onClick={saveDraft}><Save size={16} /> Save project draft</button>
+          <label>Project name<input value={draft.title} onChange={(e) => { setDraftOverride({ ...draft, title: e.target.value }); setDraftMessage(""); }} disabled={draftSaving || sending} maxLength={100} /></label>
+          <label>Python draft<textarea className="project-editor" value={draft.code} onChange={(e) => { setDraftOverride({ ...draft, code: e.target.value.slice(0, 20000) }); setDraftMessage(""); }} disabled={draftSaving || sending} spellCheck={false} /></label>
+          <label>Explain one design decision<textarea value={draft.reflection} onChange={(e) => { setDraftOverride({ ...draft, reflection: e.target.value.slice(0, 3000) }); setDraftMessage(""); }} disabled={draftSaving || sending} maxLength={3000} rows={4} /></label>
+          <button className="button outline" type="button" onClick={saveDraft} disabled={draftSaving || sending}><Save size={16} /> {draftSaving ? "Saving draft…" : "Save project draft"}</button>
           {!preview && <div className="tool-actions" style={{ marginTop: 16 }}>
-            <button className="button gold" type="button" onClick={submitForReview} disabled={sending || submission?.status === "submitted"}>
+            <button className="button gold" type="button" onClick={submitForReview} disabled={draftSaving || sending || submission?.status === "submitted"}>
               {sending ? "Submitting capstone…" : submission?.status === "submitted" ? "Awaiting academic review" : "Submit capstone for assessment"}
               <ArrowRight size={16} />
             </button>
@@ -187,13 +198,13 @@ export function CourseModule({
                   {option}
                 </label>
               ))}
-              {score !== null && <p className="answer-feedback">{preview ? answers[i] === question.answer ? "✓ Correct. " : "Review: " : "Explanation: "}{question.explanation}</p>}
+              {preview && score !== null && <p className="answer-feedback">{answers[i] === question.answer ? "✓ Correct. " : "Review: "}{question.explanation}</p>}
             </fieldset>
           ))}
           <button className="button gold" disabled={busy || answers.some((answer) => answer < 0)}>{busy ? "Saving result…" : "Submit knowledge check"} <ArrowRight size={17} /></button>
           <p role="alert" className="save-error">{error}</p>
         </form>
-        {score !== null && <div className={`result ${score >= 80 ? "passed" : ""}`} role="status"><h3>{score}% · {score >= 80 ? "Module mastered" : "Practice and try again"}</h3><p>{score >= 80 ? "Your best result is recorded. Continue to the next module when ready." : "Review the explanations and retry. Your best result is kept."}</p></div>}
+        {score !== null && <div className={`result ${score >= 80 ? "passed" : ""}`} role="status"><h3>{score}% · {score >= 80 ? "Module mastered" : "Practice and try again"}</h3><p>{score >= 80 ? "Your best result is recorded. Continue to the next module when ready." : "Revisit this lesson and its guided practice before retrying. Your best result is kept."}</p></div>}
         {nextModule && <Link className="button outline" href={moduleUrl(nextModule)}>
           {score !== null && score >= 80 ? "Continue to next module" : "Explore next module"} <ArrowRight size={17} aria-hidden="true" />
         </Link>}
